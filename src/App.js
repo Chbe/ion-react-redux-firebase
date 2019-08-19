@@ -9,6 +9,7 @@ import { isLoaded, isEmpty, withFirebase } from 'react-redux-firebase';
 import { StyledFirebaseAuth } from 'react-firebaseui';
 import * as firebaseui from 'firebaseui';
 import PropTypes from 'prop-types';
+import './theme/index.css';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';

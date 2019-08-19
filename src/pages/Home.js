@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
-import { happy } from 'ionicons/icons';
+import { happy, add } from 'ionicons/icons';
 import {
   IonButtons,
   IonContent,
@@ -18,29 +18,50 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonCardContent,
-  IonSkeletonText
+  IonSkeletonText,
+  IonLabel,
+  IonModal,
+  IonInput
 } from '@ionic/react';
+import CreateGameModal from '../components/CreateGameModal';
 
 const Home = ({ games, history }) => {
+
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="end">
+          <IonButtons slot="start">
             <IonButton
               onClick={(ev) => {
                 ev.preventDefault();
                 history.push('/profile');
               }}>
-              <IonIcon slot="end" icon={happy}></IonIcon>
+              <IonIcon icon={happy}></IonIcon>
+            </IonButton>
+          </IonButtons>
+
+          <IonButtons slot="end">
+            <IonButton onClick={() => setShowModal(true)}>
+              <IonIcon icon={add}></IonIcon>
             </IonButton>
           </IonButtons>
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">
-        {games ?
 
+      <IonContent className="ion-padding">
+
+        <IonModal
+          isOpen={showModal}
+          onDidDismiss={() => setShowModal(false)}>
+          <CreateGameModal />
+          <IonButton onClick={() => setShowModal(false)}>CREATE GAME</IonButton>
+        </IonModal>
+
+        {games ?
           <IonList>
             {games.map(game => {
               return <IonCard key={game.id}>
@@ -100,5 +121,5 @@ export default compose(
       ['lastUpdated', 'desc']
     ]
   }]),
-  connect((mapStateToProps))
+  connect(mapStateToProps)
 )(Home)
