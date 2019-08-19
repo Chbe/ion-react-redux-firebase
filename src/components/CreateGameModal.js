@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonItem, IonInput, IonLabel, IonList, IonListHeader, IonAvatar } from '@ionic/react';
 import { connect } from 'react-redux';
-import InviteFriend from './InviteFriend';
+import InviteFriend from './InviteFriendItem';
 
 let invitedArr = [];
 
@@ -9,8 +9,7 @@ const CreateGameModal = ({ profile }) => {
     return (<>
         <IonItem>
             <IonLabel position="floating">Game name</IonLabel>
-            <IonInput
-            ></IonInput>
+            <IonInput></IonInput>
         </IonItem>
         <IonList>
             <IonListHeader>Friends</IonListHeader>
