@@ -1,0 +1,15 @@
+.letterCountdown {
+    color: #000;
+    font-size: 80px;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+    
+    .letterCountdown.puffer {
+      opacity: 0;
+      transform: scale(1.6, 1.6);
+      transition: all 0.4s ease-out;
+  }
