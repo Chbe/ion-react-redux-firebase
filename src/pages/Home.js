@@ -21,7 +21,7 @@ import {
   IonSkeletonText
 } from '@ionic/react';
 
-const Home = ({ games }) => {
+const Home = ({ games, history }) => {
   return (
     <>
       <IonHeader>
@@ -30,7 +30,7 @@ const Home = ({ games }) => {
             <IonButton
               onClick={(ev) => {
                 ev.preventDefault();
-                // props.history.push('/profile');
+                history.push('/profile');
               }}>
               <IonIcon slot="end" icon={happy}></IonIcon>
             </IonButton>

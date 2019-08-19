@@ -28,6 +28,7 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import Profile from './pages/Profile';
 
 const App = ({ firebase, auth }) => {
   return (
@@ -60,7 +61,8 @@ const App = ({ firebase, auth }) => {
                   firebaseAuth={firebase.auth()}
                 />
                 : <IonRouterOutlet>
-                  <Route path="/home" component={Home} exact={true} />
+                  <Route path="/home" component={Home} exact />
+                  <Route path="/profile" component={Profile} exact />
                   <Route exact path="/" render={() => <Redirect to="/home" />} />
                 </IonRouterOutlet>
           }
