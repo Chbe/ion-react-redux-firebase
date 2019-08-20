@@ -1,16 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { IonItem, IonInput, IonLabel, IonList, IonListHeader } from '@ionic/react';
+import { IonItem, IonInput, IonLabel, IonList, IonListHeader, IonAvatar, IonButtons, IonButton } from '@ionic/react';
 import { connect } from 'react-redux';
 import InviteFriend from './InviteFriendItem';
 import { setTitle, setInvites } from '../store/actions';
+import SearchUser from './SearchUser';
 
 let invitedArr = [];
 
-const CreateGameModal = ({ profile, title, setTitle, setInvites }) => {
+const RenderFriendComponent = (user) => {
+    return <InviteFriend
+        friend={user}
+        invited={
+            invitedArr.find(invited =>
+                invited.uid === user.uid)
+                ? 'Invited' : 'Not invited'
+        } />
+}
 
+const CreateGameModal = ({ friends = [], title, setTitle, setInvites, searchResult = [] }) => {
     const setGameTitle = (e) => {
         const txt = e.currentTarget.value;
         setTitle(txt);
+    }
+
+    const toggleInvites = (user) => {
+        if (invitedArr.find(invited => invited.uid === user.uid)) {
+            invitedArr = invitedArr.filter(
+                invited => invited.uid !== user.uid
+            );
+        } else {
+            invitedArr.push(user);
+        }
+
+        setInvites(invitedArr);
     }
 
     return (<>
@@ -19,32 +41,38 @@ const CreateGameModal = ({ profile, title, setTitle, setInvites }) => {
             {/* TODO: onChange dont work (bug in ionic/react) */}
             <IonInput value={title} onInput={setGameTitle}></IonInput>
         </IonItem>
+        <SearchUser />
+        {searchResult && searchResult.map(result => {
+            return <div key={result.uid}
+                onClick={() => { toggleInvites(result) }}>
+                <IonListHeader>Search result</IonListHeader>
+                {RenderFriendComponent(result)}
+            </div>
+        })}
         <IonList>
             <IonListHeader>Friends</IonListHeader>
-            {profile.friends && profile.friends.map(friend => {
-                return (
-                    <div
-                        key={friend.uid}
-                        onClick={() => {
-                            if (invitedArr.includes(friend.uid)) {
-                                invitedArr = invitedArr.filter(
-                                    invited => invited.uid !== friend.uid
-                                );
-                            } else {
-                                invitedArr.push(friend);
-                            }
-                            setInvites(invitedArr);
-                        }}>
-                        <InviteFriend friend={friend} />
-                    </div>)
-            })}
+            {friends && friends
+                .filter(friend => {
+                    if (searchResult) {
+                        return !!!searchResult.find(invited => invited.uid === friend.uid);
+                    }
+                    return true;
+                })
+                .map(friend => {
+                    return (
+                        <div key={friend.uid}
+                            onClick={() => { toggleInvites(friend) }}>
+                            {RenderFriendComponent(friend)}
+                        </div>)
+                })}
         </IonList>
     </>
     )
 }
 
-const mapStateToProps = ({ firebase, createGame }) => ({
-    profile: firebase.profile,
+const mapStateToProps = ({ firebase, firestore, createGame }) => ({
+    friends: firebase.profile.friends,
+    searchResult: firestore.ordered.searchResult,
     title: createGame.title
 });
 const mapDispatchToProps = {

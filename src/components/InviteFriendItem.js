@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { IonAvatar, IonLabel, IonItem } from '@ionic/react';
 
-const InviteFriend = ({ friend }) => {
+const InviteFriend = ({ friend, invited }) => {
     const invite = 'Not invited';
     const uninvite = 'Invited';
-    const [btnText, setBtnText] = useState(invite);
+    const [btnText, setBtnText] = useState(invited);
 
     return (
         <IonItem
