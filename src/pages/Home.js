@@ -7,7 +7,6 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
-  IonTitle,
   IonToolbar,
   IonButton,
   IonIcon,
@@ -125,7 +124,9 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
             <IonRippleEffect></IonRippleEffect>
             <IonIcon slot='start' icon={close}></IonIcon>
           </div>
-          <CreateGameModal />
+          <IonContent>
+            <CreateGameModal />
+          </IonContent>
           <IonButton onClick={createGame}>CREATE GAME</IonButton>
         </IonModal>
 
