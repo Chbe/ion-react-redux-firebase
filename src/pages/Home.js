@@ -72,6 +72,7 @@ const Home = ({ games, uid, history }) => {
 
       <IonContent className="ion-padding">
 
+        {/* Create game modal */}
         <IonModal
           isOpen={showModal}
           onDidDismiss={() => setShowModal(false)}>
@@ -81,7 +82,8 @@ const Home = ({ games, uid, history }) => {
           <CreateGameModal />
           <IonButton onClick={() => setShowModal(false)}>CREATE GAME</IonButton>
         </IonModal>
-
+        
+        {/* Invites  */}
         {games && games.map(invite => {
           if (!invite.acceptedInvites.includes(uid))
             return <IonItemSliding key={invite.id}>
@@ -117,6 +119,7 @@ const Home = ({ games, uid, history }) => {
             </IonItemSliding>
         })}
 
+        {/* Active or pending games */}
         {games ?
           <IonList>
             {games.map(game => {
