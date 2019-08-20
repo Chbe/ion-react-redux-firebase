@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
-import { happy, add, mail, close, checkmarkCircleOutline, closeCircleOutline } from 'ionicons/icons';
+import { happy, add, mail, close, checkmarkCircleOutline, closeCircleOutline, arrowDropleft } from 'ionicons/icons';
 import {
   IonButtons,
   IonContent,
@@ -26,7 +26,6 @@ import {
   IonItemOptions
 } from '@ionic/react';
 import CreateGameModal from '../components/CreateGameModal';
-import { createGame } from '../store/actions';
 import { useFirestore } from 'react-redux-firebase'
 
 const sceletonCard = (<IonCard key='1'>
@@ -114,10 +113,10 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, createGame }) =
         {games && games.map(invite => {
           if (!invite.acceptedInvites.includes(profile.uid))
             return <IonItemSliding key={invite.id}>
-              <IonItem>
+              <IonItem detail detailIcon={arrowDropleft}>
                 <IonIcon slot="start" icon={mail}></IonIcon>
                 <IonLabel>
-                  <h2>New Invite</h2>
+                  <h2>New Invite - {invite.title}</h2>
                   <p>From {invite.players.find(player =>
                     player.uid === invite.admin)
                     .displayName}</p>
@@ -190,10 +189,6 @@ const mapStateToProps = ({ firebase, firestore, createGame }) => ({
   gameInvites: createGame.invites
 });
 
-const mapDispatchToProps = {
-  createGame: createGame
-};
-
 export default compose(
   //withRouter, if you use react router to redirect
   firestoreConnect(props => [{
@@ -210,5 +205,5 @@ export default compose(
       ['lastUpdated', 'desc']
     ]
   }]),
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(mapStateToProps)
 )(Home)
