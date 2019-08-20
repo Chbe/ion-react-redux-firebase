@@ -56,16 +56,17 @@ const Home = ({ games, uid, history }) => {
                 ev.preventDefault();
                 history.push('/profile');
               }}>
-              <IonIcon icon={happy}></IonIcon>
+              <IonIcon slot="start" icon={happy}></IonIcon>
+              <IonLabel>Profile</IonLabel>
             </IonButton>
           </IonButtons>
 
           <IonButtons slot="end">
             <IonButton onClick={() => setShowModal(true)}>
-              <IonIcon icon={add}></IonIcon>
+              <IonLabel>New</IonLabel>
+              <IonIcon slot="end" icon={add}></IonIcon>
             </IonButton>
           </IonButtons>
-          <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
 
