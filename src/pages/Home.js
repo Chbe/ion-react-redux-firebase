@@ -23,7 +23,8 @@ import {
   IonModal,
   IonItemSliding,
   IonItemOption,
-  IonItemOptions
+  IonItemOptions,
+  IonRippleEffect
 } from '@ionic/react';
 import CreateGameModal from '../components/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase'
@@ -43,14 +44,14 @@ const sceletonCard = (<IonCard key='1'>
   </IonCardContent>
 </IonCard>);
 
-const Home = ({ games, profile, history, gameTitle, gameInvites, createGame }) => {
+const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
   const firestore = useFirestore();
   const [showModal, setShowModal] = useState(false);
   const uids = gameInvites.map(player => {
     return { uid: player.uid }
   });
 
-  const tryCreateGame = () => {
+  const createGame = () => {
     if (!!gameTitle.length && !!gameInvites.length) {
       const { uid, displayName, photoURL } = profile;
       const newGame = {
@@ -72,6 +73,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, createGame }) =
     }
   }
 
+  // TODO: Filter different list for invites, users turn, active and pending. In that order.
   return (
     <>
       <IonHeader>
@@ -102,11 +104,19 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, createGame }) =
         <IonModal
           isOpen={showModal}
           onDidDismiss={() => setShowModal(false)}>
-          <IonItem style={{ width: '6em' }} onClick={() => setShowModal(false)}>
+          <div style={{
+            width: '35px',
+            height: '35px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontSize: '1.5rem'
+          }} onClick={() => setShowModal(false)}>
+            <IonRippleEffect></IonRippleEffect>
             <IonIcon slot='start' icon={close}></IonIcon>
-          </IonItem>
+          </div>
           <CreateGameModal />
-          <IonButton onClick={tryCreateGame}>CREATE GAME</IonButton>
+          <IonButton onClick={createGame}>CREATE GAME</IonButton>
         </IonModal>
 
         {/* Invites  */}
@@ -160,7 +170,12 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, createGame }) =
                 >
                   <IonCardHeader>
                     <IonCardSubtitle>
-                      {game.status === 'pending' ? game.status : game.activePlayer}
+                      {game.status === 'pending' ?
+                        game.status :
+                        game.activePlayer.uid === profile.uid ?
+                          'Your turn' :
+                          game.activePlayer.displayName
+                      }
                     </IonCardSubtitle>
                     <IonCardTitle
                       style={{
