@@ -42,7 +42,7 @@ const sceletonCard = (<IonCard key='1'>
   </IonCardContent>
 </IonCard>);
 
-const Home = ({ games, uid, history }) => {
+const Home = ({ games, uid, history, gameTitle, gameInvites }) => {
 
   const [showModal, setShowModal] = useState(false);
 
@@ -80,9 +80,14 @@ const Home = ({ games, uid, history }) => {
             <IonIcon slot='start' icon={close}></IonIcon>
           </IonItem>
           <CreateGameModal />
-          <IonButton onClick={() => setShowModal(false)}>CREATE GAME</IonButton>
+          <IonButton onClick={() => {
+            if (!!gameTitle.length && !!gameInvites.length) {
+              setShowModal(false);
+              // TODO: Create game
+            }
+          }}>CREATE GAME</IonButton>
         </IonModal>
-        
+
         {/* Invites  */}
         {games && games.map(invite => {
           if (!invite.acceptedInvites.includes(uid))
@@ -156,9 +161,11 @@ const Home = ({ games, uid, history }) => {
   )
 }
 
-const mapStateToProps = ({ firebase, firestore }) => ({
+const mapStateToProps = ({ firebase, firestore, createGame }) => ({
   uid: firebase.auth.uid,
-  games: firestore.ordered.games
+  games: firestore.ordered.games,
+  gameTitle: createGame.title,
+  gameInvites: createGame.invites
 });
 
 export default compose(
