@@ -172,9 +172,10 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
             {games.map(game => {
               if (game.acceptedInvites.includes(profile.uid)) {
                 // Status active or pending
+                const href = game.status === 'active' ? '/game' : '/chat';
                 return <IonCard
                   key={game.id}
-                  // href='/game'
+                  href={href}
                   onClick={() => { // TODO: Only for dev. Remove.
                     console.log(game)
                   }}
