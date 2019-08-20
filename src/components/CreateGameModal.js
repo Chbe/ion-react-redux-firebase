@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { IonItem, IonInput, IonLabel, IonList, IonListHeader, IonAvatar } from '@ionic/react';
+import { IonItem, IonInput, IonLabel, IonList, IonListHeader } from '@ionic/react';
 import { connect } from 'react-redux';
 import InviteFriend from './InviteFriendItem';
+import { setTitle, setInvites } from '../store/actions';
 
 let invitedArr = [];
 
-const CreateGameModal = ({ profile }) => {
+const CreateGameModal = ({ profile, title, setTitle, setInvites }) => {
+
+    const setGameTitle = (e) => {
+        const txt = e.currentTarget.value;
+        setTitle(txt);
+    }
+
     return (<>
         <IonItem>
             <IonLabel position="floating">Game name</IonLabel>
-            <IonInput></IonInput>
+            {/* TODO: onChange dont work (bug in ionic/react) */}
+            <IonInput value={title} onInput={setGameTitle}></IonInput>
         </IonItem>
         <IonList>
             <IonListHeader>Friends</IonListHeader>
@@ -25,7 +33,7 @@ const CreateGameModal = ({ profile }) => {
                             } else {
                                 invitedArr.push(friend.uid);
                             }
-                            console.log('Invited users:', invitedArr);
+                            setInvites(invitedArr);
                         }}>
                         <InviteFriend friend={friend} />
                     </div>)
@@ -35,8 +43,13 @@ const CreateGameModal = ({ profile }) => {
     )
 }
 
-const mapStateToProps = ({ firebase }) => ({
-    profile: firebase.profile
+const mapStateToProps = ({ firebase, createGame }) => ({
+    profile: firebase.profile,
+    title: createGame.title
 });
+const mapDispatchToProps = {
+    setTitle: setTitle,
+    setInvites: setInvites
+};
 
-export default connect(mapStateToProps)(CreateGameModal);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateGameModal);

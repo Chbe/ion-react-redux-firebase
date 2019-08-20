@@ -1,1 +1,1 @@
-export { closeModal, openModal } from './createGameModalActions';
+export { setTitle, setInvites } from './createGameActions';
