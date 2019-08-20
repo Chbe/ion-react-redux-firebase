@@ -1,1 +1,1 @@
-export { setTitle, setInvites } from './createGameActions';
+export { setTitle, setInvites, createGame } from './createGameActions';

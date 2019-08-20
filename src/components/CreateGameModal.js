@@ -28,10 +28,10 @@ const CreateGameModal = ({ profile, title, setTitle, setInvites }) => {
                         onClick={() => {
                             if (invitedArr.includes(friend.uid)) {
                                 invitedArr = invitedArr.filter(
-                                    id => id !== friend.uid
+                                    invited => invited.uid !== friend.uid
                                 );
                             } else {
-                                invitedArr.push(friend.uid);
+                                invitedArr.push(friend);
                             }
                             setInvites(invitedArr);
                         }}>

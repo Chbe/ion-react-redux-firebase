@@ -26,6 +26,8 @@ import {
   IonItemOptions
 } from '@ionic/react';
 import CreateGameModal from '../components/CreateGameModal';
+import { createGame } from '../store/actions';
+import { useFirestore } from 'react-redux-firebase'
 
 const sceletonCard = (<IonCard key='1'>
   <IonCardHeader>
@@ -42,9 +44,34 @@ const sceletonCard = (<IonCard key='1'>
   </IonCardContent>
 </IonCard>);
 
-const Home = ({ games, uid, history, gameTitle, gameInvites }) => {
-
+const Home = ({ games, profile, history, gameTitle, gameInvites, createGame }) => {
+  const firestore = useFirestore();
   const [showModal, setShowModal] = useState(false);
+  const uids = gameInvites.map(player => {
+    return { uid: player.uid }
+  });
+
+  const tryCreateGame = () => {
+    if (!!gameTitle.length && !!gameInvites.length) {
+      const { uid, displayName, photoURL } = profile;
+      const newGame = {
+        acceptedInvites: [uid],
+        activePlayer: {},
+        admin: uid,
+        lastUpdated: Date.now(),
+        players: [...gameInvites, { uid, displayName, photoURL }],
+        playersUid: [...uids, { uid }],
+        status: "pending",
+        title: gameTitle
+      };
+
+      firestore
+        .collection('games')
+        .add(newGame);
+
+      setShowModal(false);
+    }
+  }
 
   return (
     <>
@@ -80,17 +107,12 @@ const Home = ({ games, uid, history, gameTitle, gameInvites }) => {
             <IonIcon slot='start' icon={close}></IonIcon>
           </IonItem>
           <CreateGameModal />
-          <IonButton onClick={() => {
-            if (!!gameTitle.length && !!gameInvites.length) {
-              setShowModal(false);
-              // TODO: Create game
-            }
-          }}>CREATE GAME</IonButton>
+          <IonButton onClick={tryCreateGame}>CREATE GAME</IonButton>
         </IonModal>
 
         {/* Invites  */}
         {games && games.map(invite => {
-          if (!invite.acceptedInvites.includes(uid))
+          if (!invite.acceptedInvites.includes(profile.uid))
             return <IonItemSliding key={invite.id}>
               <IonItem>
                 <IonIcon slot="start" icon={mail}></IonIcon>
@@ -128,7 +150,7 @@ const Home = ({ games, uid, history, gameTitle, gameInvites }) => {
         {games ?
           <IonList>
             {games.map(game => {
-              if (game.acceptedInvites.includes(uid)) {
+              if (game.acceptedInvites.includes(profile.uid)) {
                 // Status active or pending
                 return <IonCard
                   key={game.id}
@@ -162,11 +184,15 @@ const Home = ({ games, uid, history, gameTitle, gameInvites }) => {
 }
 
 const mapStateToProps = ({ firebase, firestore, createGame }) => ({
-  uid: firebase.auth.uid,
+  profile: firebase.profile,
   games: firestore.ordered.games,
   gameTitle: createGame.title,
   gameInvites: createGame.invites
 });
+
+const mapDispatchToProps = {
+  createGame: createGame
+};
 
 export default compose(
   //withRouter, if you use react router to redirect
@@ -184,5 +210,5 @@ export default compose(
       ['lastUpdated', 'desc']
     ]
   }]),
-  connect(mapStateToProps)
+  connect(mapStateToProps, mapDispatchToProps)
 )(Home)
