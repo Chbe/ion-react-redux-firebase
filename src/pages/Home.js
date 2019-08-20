@@ -29,6 +29,16 @@ import {
 import CreateGameModal from '../components/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase'
 
+const appendZero = (value) => {
+  return value < 10 ? `0${value}` : value;
+}
+
+const formatDate = (date) => {
+  const current_datetime = new Date(date);
+  const formatted_date =
+    `${current_datetime.getFullYear()}-${appendZero((current_datetime.getMonth() + 1))}-${appendZero(current_datetime.getDate())} ${current_datetime.getHours()}:${current_datetime.getMinutes()}`
+  return formatted_date;
+}
 const sceletonCard = (<IonCard key='1'>
   <IonCardHeader>
     <IonCardSubtitle>
@@ -126,10 +136,11 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
               <IonItem detail detailIcon={arrowDropleft}>
                 <IonIcon slot="start" icon={mail}></IonIcon>
                 <IonLabel>
-                  <h2>New Invite - {invite.title}</h2>
-                  <p>From {invite.players.find(player =>
+                  <h2>New Invite</h2>
+                  <p>{invite.players.find(player =>
                     player.uid === invite.admin)
-                    .displayName}</p>
+                    .displayName} invited you to the game {invite.title}<br />
+                    {formatDate(invite.lastUpdated)}</p>
                 </IonLabel>
               </IonItem>
               <IonItemOptions side='start'>
@@ -185,7 +196,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
                     </IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    {(new Date(game.lastUpdated)).toString()}
+                    {formatDate(game.lastUpdated)}
                   </IonCardContent>
                 </IonCard>
               }
