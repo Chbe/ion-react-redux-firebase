@@ -17,7 +17,6 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonCardContent,
-  IonSkeletonText,
   IonLabel,
   IonModal,
   IonItemSliding,
@@ -28,6 +27,7 @@ import {
 import CreateGameModal from '../components/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase';
 import styled from 'styled-components';
+import SkeletonGames from '../components/skeletons/SkeletonGames';
 
 const ModalHeader = styled.div`
   width: 35px;
@@ -48,20 +48,6 @@ const formatDate = (date) => {
     `${current_datetime.getFullYear()}-${appendZero((current_datetime.getMonth() + 1))}-${appendZero(current_datetime.getDate())} ${current_datetime.getHours()}:${current_datetime.getMinutes()}`
   return formatted_date;
 }
-const sceletonCard = (<IonCard key='1'>
-  <IonCardHeader>
-    <IonCardSubtitle>
-      <IonSkeletonText animated style={{ width: '10%' }} />
-    </IonCardSubtitle>
-    <IonCardTitle style={{ textAlign: 'center' }}>
-      <IonSkeletonText animated style={{ width: '20%%' }} />
-    </IonCardTitle>
-  </IonCardHeader>
-
-  <IonCardContent>
-    <IonSkeletonText animated style={{ width: '40%%' }} />
-  </IonCardContent>
-</IonCard>);
 
 const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
   const firestore = useFirestore();
@@ -134,7 +120,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
         </IonModal>
 
         {/* Invites  */}
-        {games && games.map(invite => {
+        {games && <IonList> {games.map(invite => {
           if (!invite.acceptedInvites.includes(profile.uid))
             return <IonItemSliding key={invite.id}>
               <IonItem detail detailIcon={arrowDropleft}>
@@ -167,7 +153,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
                   </IonItemOption>
               </IonItemOptions>
             </IonItemSliding>
-        })}
+        })}</IonList>}
 
         {/* Active or pending games */}
         {games ?
@@ -205,8 +191,9 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
                 </IonCard>
               }
             })}
-          </IonList> : sceletonCard
+          </IonList> : <SkeletonGames />
         }
+        
       </IonContent>
     </>
   )
