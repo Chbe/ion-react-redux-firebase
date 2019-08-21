@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
@@ -8,12 +8,18 @@ import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from '@i
 
 const lettersArr = ['a', 'b', 'd']; // TODO: Dev
 const Game = () => {
+    useEffect(() => {
+        console.log('Game enter');
+        return () => {
+            console.log('Game leave');
+        };
+    }, [])
     return (
         <>
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="home" />
+                        <IonBackButton defaultHref="/" />
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>

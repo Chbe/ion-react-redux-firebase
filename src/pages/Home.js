@@ -173,12 +173,14 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
             {games.map(game => {
               if (game.acceptedInvites.includes(profile.uid)) {
                 // Status active or pending
-                const href = game.status === 'active' ? '/game' : '/chat';
+                const href = game.status === 'active' ? '/game' : `/chat/${game.id}`;
                 return <IonCard
                   key={game.id}
-                  href={href}
-                  onClick={() => { // TODO: Only for dev. Remove.
+                  // href={href}
+                  onclick={(e) => {
+                    e.preventDefault();
                     console.log(game)
+                    history.push(href);
                   }}
                 >
                   <IonCardHeader>
