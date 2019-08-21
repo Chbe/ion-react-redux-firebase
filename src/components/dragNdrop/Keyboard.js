@@ -1,5 +1,19 @@
 import React from 'react';
 import Key from './Key';
+import styled from 'styled-components';
+
+const KeyboardWrapper = styled.div`
+    position: fixed;
+    bottom: 0;
+    left: 0:
+    width: 100%;
+`;
+
+const KeyboardRow = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
 
 const lettersArr = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -9,29 +23,16 @@ const lettersArr = [
 
 const Keyboard = () => {
     return (
-        <div style={keyboardStyle}>
+        <KeyboardWrapper>
             {lettersArr.map((row, i) => {
-                return <div key={i} style={rowStyle}>
+                return <KeyboardRow key={i}>
                     {row.map(key => {
                         return <Key key={key} name={key} />
                     })}
-                </div>
+                </KeyboardRow>
             })}
-        </div>
+        </KeyboardWrapper>
     )
-}
-
-const keyboardStyle = {
-    position: 'fixed',
-    bottom: '0',
-    left: '0',
-    width: '100%'
-}
-
-const rowStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
 }
 
 export default Keyboard
