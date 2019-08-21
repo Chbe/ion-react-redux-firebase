@@ -7,14 +7,12 @@ import { withFirestore } from 'react-redux-firebase';
 
 const SearchUser = ({ searchUser }) => {
     return (
-        <div>
-            <IonSearchbar
-                animated
-                placeholder="Search for user..."
-                onIonChange={({ detail: { value } }) => value && searchUser(value)}
-                debounce={1000}
-            ></IonSearchbar>
-        </div>
+        <IonSearchbar
+            animated
+            placeholder="Search for user..."
+            onIonChange={({ detail: { value } }) => value && searchUser(value)}
+            debounce={1000}
+        ></IonSearchbar>
     )
 }
 

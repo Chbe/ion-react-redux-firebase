@@ -26,7 +26,17 @@ import {
   IonRippleEffect
 } from '@ionic/react';
 import CreateGameModal from '../components/CreateGameModal';
-import { useFirestore } from 'react-redux-firebase'
+import { useFirestore } from 'react-redux-firebase';
+import styled from 'styled-components';
+
+const ModalHeader = styled.div`
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+`;
 
 const appendZero = (value) => {
   return value < 10 ? `0${value}` : value;
@@ -113,17 +123,10 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
         <IonModal
           isOpen={showModal}
           onDidDismiss={() => setShowModal(false)}>
-          <div style={{
-            width: '35px',
-            height: '35px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            fontSize: '1.5rem'
-          }} onClick={() => setShowModal(false)}>
+          <ModalHeader onClick={() => setShowModal(false)}>
             <IonRippleEffect></IonRippleEffect>
             <IonIcon slot='start' icon={close}></IonIcon>
-          </div>
+          </ModalHeader>
           <IonContent>
             <CreateGameModal />
           </IonContent>

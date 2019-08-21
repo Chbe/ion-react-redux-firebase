@@ -6,9 +6,18 @@ import TouchBackend from 'react-dnd-touch-backend';
 import LetterBox from '../components/dragNdrop/LetterBox';
 import Keyboard from '../components/dragNdrop/Keyboard';
 import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel } from '@ionic/react';
+import styled from 'styled-components';
+
+const LetterBoxConstainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const Wrapper = styled(LetterBoxConstainer)`height: 70vh;`
 
 const Game = ({ match: { params: { gameId } }, games, history }) => {
-    if(!games) history.push('/');
+    if (!games) history.push('/');
     const [game, updateGame] = useState({});
     useEffect(() => {
         console.log('Game Page Enter');
@@ -30,28 +39,19 @@ const Game = ({ match: { params: { gameId } }, games, history }) => {
             <IonContent className="ion-padding">
                 {/* TODO: If platform, touch or HTML5 */}
                 <DndProvider backend={HTML5Backend}>
-                    <div style={wrapper}>
-                        <div style={letterBoxConstainer}>
+                    <Wrapper>
+                        <LetterBoxConstainer>
                             {game.letters && <LetterBox lettersArr={game.letters} />}
-                        </div>
+                        </LetterBoxConstainer>
                         <Keyboard />
-                    </div>
+                    </Wrapper>
                 </DndProvider>
             </IonContent>
         </>
     )
 }
 
-const letterBoxConstainer = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-}
 
-const wrapper = {
-    ...letterBoxConstainer,
-    height: '70vh'
-}
 
 export default connect(({ firestore }) => ({
     games: firestore.ordered.games
