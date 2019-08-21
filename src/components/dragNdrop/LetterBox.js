@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import ItemTypes from './ItemTypes';
 import './LetterBox.css';
+import styled from 'styled-components';
 
-const style = {
-    height: '20vh',
-    width: '20vw',
-    borderRadius: '1.5rem',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-}
+const BoxWrapper = styled.div`
+    height: 20vh;
+    width: 20vw;
+    border-radius: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: ${({ bg }) => bg};
+`;
+
 let letterIndex = 0;
 
 const LetterBox = ({ lettersArr = [] }) => {
@@ -39,11 +42,11 @@ const LetterBox = ({ lettersArr = [] }) => {
         }),
     })
     const isActive = canDrop && isOver
-    let backgroundColor = 'grey'
+    let backgroundColor = 'var(--ion-color-success)'
     if (isActive) {
-        backgroundColor = 'pink'
+        backgroundColor = 'var(--ion-color-success-tint)'
     } else if (canDrop) {
-        backgroundColor = 'red'
+        backgroundColor = 'var(--ion-color-success-shade)'
     }
 
     const animateLetters = (time) => {
@@ -76,10 +79,11 @@ const LetterBox = ({ lettersArr = [] }) => {
         }
     }, []);
     return (
-        <div ref={drop} style={{ ...style, backgroundColor }}>
+        // TODO: Styled copmponent
+        <BoxWrapper ref={drop} bg={backgroundColor}>
             <div className={className}>{letter}</div>
             {/* {isActive ? 'Release to drop' : 'Drag a box here'} */}
-        </div>
+        </BoxWrapper>
     )
 }
 export default LetterBox
