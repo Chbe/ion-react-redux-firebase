@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import ItemTypes from './ItemTypes';
-import './LetterBox.css';
 import styled from 'styled-components';
 
 const BoxWrapper = styled.div`
@@ -12,6 +11,18 @@ const BoxWrapper = styled.div`
     justify-content: center;
     align-items: center;
     background-color: ${({ bg }) => bg};
+`;
+
+const LetterDiv = styled.div`
+    color: white;
+    font-size: 8rem;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    &.puffer {
+        opacity: 0;
+        transform: scale(1.6, 1.6);
+        transition: all 0.4s ease-out;
+    }
 `;
 
 let letterIndex = 0;
@@ -81,7 +92,7 @@ const LetterBox = ({ lettersArr = [] }) => {
     return (
         // TODO: Styled copmponent
         <BoxWrapper ref={drop} bg={backgroundColor}>
-            <div className={className}>{letter}</div>
+            <LetterDiv className={className}>{letter}</LetterDiv>
             {/* {isActive ? 'Release to drop' : 'Drag a box here'} */}
         </BoxWrapper>
     )
