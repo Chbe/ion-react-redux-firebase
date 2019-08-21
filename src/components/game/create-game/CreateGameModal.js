@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { IonItem, IonInput, IonLabel, IonList, IonListHeader, IonAvatar, IonButtons, IonButton } from '@ionic/react';
+import React from 'react';
+import { IonItem, IonInput, IonLabel, IonList, IonListHeader } from '@ionic/react';
 import { connect } from 'react-redux';
 import InviteFriend from './InviteFriendItem';
-import { setTitle, setInvites } from '../store/actions';
-import SearchUser from './SearchUser';
+import { setTitle, setInvites } from '../../../store/actions';
+import SearchUser from '../../SearchUser';
 
 let invitedArr = [];
 

@@ -24,7 +24,7 @@ import {
   IonItemOptions,
   IonRippleEffect
 } from '@ionic/react';
-import CreateGameModal from '../components/CreateGameModal';
+import CreateGameModal from '../components/game/create-game/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase';
 import styled from 'styled-components';
 import SkeletonGames from '../components/skeletons/SkeletonGames';
