@@ -70,10 +70,10 @@ const CreateGameModal = ({ friends = [], title, setTitle, setInvites, searchResu
     )
 }
 
-const mapStateToProps = ({ firebase, firestore, createGame }) => ({
+const mapStateToProps = ({ firebase, firestore, createGameReducer }) => ({
     friends: firebase.profile.friends,
     searchResult: firestore.ordered.searchResult,
-    title: createGame.title
+    title: createGameReducer.title
 });
 const mapDispatchToProps = {
     setTitle: setTitle,

@@ -1,9 +1,6 @@
 import {
     GAME_SET_TITLE,
-    GAME_SET_INVITES,
-    CREATE_GAME_START,
-    CREATE_GAME_SUCCESS,
-    CREATE_GAME_FAIL
+    GAME_SET_INVITES
 } from '../actionTypes';
 
 export const setTitle = (title) => (dispatch) => {

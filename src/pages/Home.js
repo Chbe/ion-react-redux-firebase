@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { connect } from 'react-redux'
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { happy, add, mail, close, checkmarkCircleOutline, closeCircleOutline, arrowDropleft } from 'ionicons/icons';
@@ -199,11 +199,11 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
   )
 }
 
-const mapStateToProps = ({ firebase, firestore, createGame }) => ({
+const mapStateToProps = ({ firebase, firestore, createGameReducer }) => ({
   profile: firebase.profile,
   games: firestore.ordered.games,
-  gameTitle: createGame.title,
-  gameInvites: createGame.invites
+  gameTitle: createGameReducer.title,
+  gameInvites: createGameReducer.invites
 });
 
 export default compose(

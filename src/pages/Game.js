@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
-import LetterBox from '../components/dragNdrop/LetterBox';
-import Keyboard from '../components/dragNdrop/Keyboard';
+import LetterBox from '../components/game/drag-n-drop/LetterBox';
+import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel, IonProgressBar } from '@ionic/react';
 import styled from 'styled-components';
 
@@ -17,6 +17,7 @@ const LetterBoxConstainer = styled.div`
 const Wrapper = styled(LetterBoxConstainer)`height: 70vh;`
 
 export class Game extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
 
@@ -29,18 +30,22 @@ export class Game extends Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
             this.props.history.push('/');
         } else {
             const gameId = this.props.match.params.gameId;
             const game = this.props.games.find(game => game.id == gameId);
-            
-            this.setState({ game, gameId });
+
+            if (this._isMounted)
+                this.setState({ game, gameId });
+
             this.prepareForGameStart(game);
         }
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         this.cleanUp();
     }
 
@@ -55,7 +60,8 @@ export class Game extends Component {
         this.bufferInterval = setInterval(() => {
             if (buffer < 1) {
                 buffer += 0.01;
-                this.setState({ buffer })
+                if (this._isMounted)
+                    this.setState({ buffer })
             }
             else {
                 clearInterval(this.bufferInterval);
@@ -71,7 +77,8 @@ export class Game extends Component {
     startTimer = () => {
         this.startInterval = setInterval(() => {
             const timeLeft = this.state.timeLeft - 1;
-            this.setState({ timeLeft })
+            if (this._isMounted)
+                this.setState({ timeLeft })
             if (timeLeft === 0) {
                 this.finishRound();
             }
@@ -82,7 +89,8 @@ export class Game extends Component {
         this.progressbarTimer = setInterval(() => {
             if (progressbarValue < 1) {
                 progressbarValue += 0.01;
-                this.setState({ progressbarValue })
+                if (this._isMounted)
+                    this.setState({ progressbarValue })
             }
             else {
                 clearInterval(this.progressbarTimerz);
@@ -91,8 +99,13 @@ export class Game extends Component {
     }
 
     finishRound = () => {
-        // alert('times up');
         this.cleanUp();
+        const letter = this.props.chosenLetter;
+        if(letter) {
+            console.log('Letter:', letter)
+        } else {
+            console.log('No letter')
+        }
     }
 
     cleanUp = () => {
@@ -140,6 +153,14 @@ export class Game extends Component {
     }
 }
 
-export default connect(({ firestore }) => ({
-    games: firestore.ordered.games
-}))(Game)
+const mapStateToProps = ({ firestore, gameReducer }) => ({
+    games: firestore.ordered.games,
+    chosenLetter: gameReducer.letter
+});
+
+const mapDispatchToProps = {};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Game)

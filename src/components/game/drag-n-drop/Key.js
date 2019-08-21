@@ -1,7 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux'
 import { useDrag } from 'react-dnd';
 import ItemTypes from './ItemTypes';
 import styled from 'styled-components';
+import {setLetter} from '../../../store/actions';
 
 const KeyDiv = styled.div`
     background-color: var(--ion-color-success);
@@ -18,13 +20,14 @@ const KeyDiv = styled.div`
     opacity: ${({ opacity }) => (opacity)};
 `;
 
-const Key = ({ name }) => {
+const Key = ({ name, setLetterAction}) => {
     const [{ isDragging }, drag] = useDrag({
         item: { name, type: ItemTypes.BOX },
         end: (item, monitor) => {
             const dropResult = monitor.getDropResult()
             if (item && dropResult) {
-                // alert(`You dropped ${item.name} into ${dropResult.name}!`)
+                // Dropped ${item.name} into ${dropResult.name}!`)
+                setLetterAction(item.name);
             }
         },
         collect: monitor => ({
@@ -36,4 +39,15 @@ const Key = ({ name }) => {
         <KeyDiv ref={drag} opacity={opacity}>{name}</KeyDiv>
     )
 }
-export default Key
+const mapStateToProps = ({ gameReducer }) => ({
+    chosenLetter: gameReducer.letter
+});
+
+const mapDispatchToProps = {
+    setLetterAction: setLetter
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Key)
