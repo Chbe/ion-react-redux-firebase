@@ -1,17 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import LetterBox from '../components/dragNdrop/LetterBox';
 import Keyboard from '../components/dragNdrop/Keyboard';
-import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from '@ionic/react';
+import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel } from '@ionic/react';
 
-const lettersArr = ['a', 'b', 'd']; // TODO: Dev
-const Game = () => {
+const Game = ({ match: { params: { gameId } }, games, history }) => {
+    if(!games) history.push('/');
+    const [game, updateGame] = useState({});
     useEffect(() => {
-        console.log('Game enter');
+        console.log('Game Page Enter');
+        games && updateGame(games.find(game => game.id == gameId));
         return () => {
-            console.log('Game leave');
+            console.log('Game Page Leave');
         };
     }, [])
     return (
@@ -21,6 +24,7 @@ const Game = () => {
                     <IonButtons slot="start">
                         <IonBackButton defaultHref="/" />
                     </IonButtons>
+                    <IonLabel>{game && game.title}</IonLabel>
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
@@ -28,7 +32,7 @@ const Game = () => {
                 <DndProvider backend={HTML5Backend}>
                     <div style={wrapper}>
                         <div style={letterBoxConstainer}>
-                            <LetterBox lettersArr={lettersArr} />
+                            {game.letters && <LetterBox lettersArr={game.letters} />}
                         </div>
                         <Keyboard />
                     </div>
@@ -49,4 +53,6 @@ const wrapper = {
     height: '70vh'
 }
 
-export default Game
+export default connect(({ firestore }) => ({
+    games: firestore.ordered.games
+}))(Game)

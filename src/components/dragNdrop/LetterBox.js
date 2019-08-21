@@ -14,13 +14,23 @@ const style = {
 let letterIndex = 0;
 
 const LetterBox = ({ lettersArr = [] }) => {
+    let isCancelled = false;
     const [letter, setLetter] = useState('');
     const [className, setClassName] = useState('letterCountdown');
+
+    const updateLetterState = (val) => {
+        if (!isCancelled)
+            setLetter(val);
+    }
+    const updateClassState = (val) => {
+        if (!isCancelled)
+            setClassName(val);
+    }
 
     const [{ canDrop, isOver }, drop] = useDrop({
         accept: ItemTypes.BOX,
         drop: (value) => {
-            setLetter(value.name);
+            updateLetterState(value.name);
             return ({ name: 'LetterBox' });
         },
         collect: monitor => ({
@@ -37,26 +47,33 @@ const LetterBox = ({ lettersArr = [] }) => {
     }
 
     const animateLetters = (time) => {
-        setTimeout(() => {
+        return setTimeout(() => {
             if (letterIndex < lettersArr.length) {
                 setTimeout(() => {
-                    setClassName('letterCountdown puffer');
+                    updateClassState('letterCountdown puffer');
                 }, 600);
-                setClassName('letterCountdown');
-                setLetter(lettersArr[letterIndex]);
+                updateClassState('letterCountdown');
+                updateLetterState(lettersArr[letterIndex]);
                 animateLetters(1200);
             }
             else {
-                setClassName('letterCountdown');
-                setLetter('');
+                updateClassState('letterCountdown');
+                updateLetterState('');
             }
             letterIndex++;
         }, time)
     };
 
     useEffect(() => {
-        console.log('useEffect - LetterRevealer');
-        animateLetters(500);
+        console.log('useEffect - LetterRevealer', lettersArr);
+        let timer = animateLetters(500);
+
+        return () => {
+            isCancelled = true;
+            setClassName('letterCountDown');
+            setLetter('');
+            clearTimeout(timer);
+        }
     }, []);
     return (
         <div ref={drop} style={{ ...style, backgroundColor }}>

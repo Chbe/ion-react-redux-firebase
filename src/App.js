@@ -66,7 +66,7 @@ const App = ({ firebase, auth }) => {
                 : <IonRouterOutlet>
                   <Route path="/home" component={Home} exact />
                   <Route path="/profile" component={Profile} exact />
-                  <Route path="/game" component={Game} exact />
+                  <Route path="/game/:gameId" component={Game} exact />
                   <Route path="/chat/:gameId" component={Chat} exact />
                   <Route exact path="/" render={() => <Redirect to="/home" />} />
                 </IonRouterOutlet>

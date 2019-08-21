@@ -173,7 +173,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
             {games.map(game => {
               if (game.acceptedInvites.includes(profile.uid)) {
                 // Status active or pending
-                const href = game.status === 'active' ? '/game' : `/chat/${game.id}`;
+                const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
                 return <IonCard
                   key={game.id}
                   // href={href}
