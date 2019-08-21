@@ -32,6 +32,7 @@ import './theme/variables.css';
 import Profile from './pages/Profile';
 import Game from './pages/Game';
 import Chat from './pages/Chat';
+import Loading from './pages/Loading';
 
 const App = ({ firebase, auth }) => {
   return (
@@ -40,7 +41,7 @@ const App = ({ firebase, auth }) => {
         <IonPage>
           {
             !isLoaded(auth)
-              ? <span></span> // TODO: Loading page
+              ? <Loading /> // TODO: Loading page
               : isEmpty(auth)
                 ? <StyledFirebaseAuth
                   uiConfig={{
