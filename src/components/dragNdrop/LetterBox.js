@@ -25,10 +25,9 @@ const LetterDiv = styled.div`
     }
 `;
 
-let letterIndex = 0;
-
 const LetterBox = ({ lettersArr = [] }) => {
     let isCancelled = false;
+    let letterIndex = 0;
     const [letter, setLetter] = useState('');
     const [className, setClassName] = useState('letterCountdown');
 
@@ -79,16 +78,14 @@ const LetterBox = ({ lettersArr = [] }) => {
     };
 
     useEffect(() => {
-        console.log('useEffect - LetterRevealer', lettersArr);
         let timer = animateLetters(500);
 
         return () => {
             isCancelled = true;
-            setClassName('letterCountDown');
-            setLetter('');
             clearTimeout(timer);
         }
     }, []);
+
     return (
         // TODO: Styled copmponent
         <BoxWrapper ref={drop} bg={backgroundColor}>

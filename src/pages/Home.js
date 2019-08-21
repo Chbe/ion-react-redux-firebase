@@ -178,10 +178,8 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
                 const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
                 return <IonCard
                   key={game.id}
-                  // href={href}
                   onclick={(e) => {
                     e.preventDefault();
-                    console.log(game)
                     history.push(href);
                   }}
                 >
