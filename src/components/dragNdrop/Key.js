@@ -1,20 +1,23 @@
-import React from 'react'
-import { useDrag } from 'react-dnd'
-import ItemTypes from './ItemTypes'
-const style = {
-    border: '1px dashed gray',
-    backgroundColor: 'grey',
-    color: 'white',
-    margin: '1px',
-    cursor: 'move',
-    float: 'left',
-    borderRadius: '5px',
-    height: '6vh',
-    lineHeight: '6vh',
-    textAlign: 'center',
-    fontSize: '30px',
-    width: '9vw' // flex-grow: 1;
-}
+import React from 'react';
+import { useDrag } from 'react-dnd';
+import ItemTypes from './ItemTypes';
+import styled from 'styled-components';
+
+const KeyDiv = styled.div`
+    background-color: var(--ion-color-success);
+    color: white;
+    margin: 1px;
+    cursor: move;
+    float: left;
+    border-radius: 5px;
+    height: 6vh;
+    line-height: 6vh;
+    text-align: center;
+    font-size: 30px;
+    width: 9vw;
+    opacity: ${({ opacity }) => (opacity)};
+`;
+
 const Key = ({ name }) => {
     const [{ isDragging }, drag] = useDrag({
         item: { name, type: ItemTypes.BOX },
@@ -30,9 +33,7 @@ const Key = ({ name }) => {
     })
     const opacity = isDragging ? 0.4 : 1
     return (
-        <div ref={drag} style={{ ...style, opacity }}>
-            {name}
-        </div>
+        <KeyDiv ref={drag} opacity={opacity}>{name}</KeyDiv>
     )
 }
 export default Key
