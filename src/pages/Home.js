@@ -141,10 +141,9 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
                 <IonIcon slot="start" icon={mail}></IonIcon>
                 <IonLabel>
                   <h2>New Invite</h2>
-                  <p>{invite.players.find(player =>
+                  <p>from {invite.players.find(player =>
                     player.uid === invite.admin)
-                    .displayName} invited you to the game {invite.title}<br />
-                    {formatDate(invite.lastUpdated)}</p>
+                    .displayName}</p>
                 </IonLabel>
               </IonItem>
               <IonItemOptions side='start'>

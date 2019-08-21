@@ -4,8 +4,8 @@ import ItemTypes from './ItemTypes';
 import styled from 'styled-components';
 
 const BoxWrapper = styled.div`
-    height: 20vh;
-    width: 20vw;
+    height: 10em;
+    width: 10em;
     border-radius: 1.5rem;
     display: flex;
     justify-content: center;
