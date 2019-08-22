@@ -55,9 +55,7 @@ export class Game extends Component {
             const gameId = this.props.match.params.gameId;
             const game = this.props.games.find(game => game.id == gameId);
             this.safeStateUpdate({ game, gameId });
-            console.log(game.letters)
             this.props.setLettersArray(game.letters);
-
             this.prepareForGameStart(game);
         }
     }

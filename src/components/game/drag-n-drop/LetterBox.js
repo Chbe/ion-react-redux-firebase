@@ -87,14 +87,14 @@ const LetterBox = ({ lettersArray, enablePlay }) => {
 
     useEffect(() => {
         isCancelled = false;
-        console.log(lettersArray)
         if (lettersArray && !!lettersArray.length) {
             var timer = animateLetters(500);
         }
 
         return () => {
             isCancelled = true;
-            clearTimeout(timer);
+            if (timer)
+                clearTimeout(timer);
         }
     }, []);
 
