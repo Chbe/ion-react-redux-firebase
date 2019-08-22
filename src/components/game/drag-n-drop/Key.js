@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { useDrag } from 'react-dnd';
 import ItemTypes from './ItemTypes';
 import styled from 'styled-components';
-import {setLetter} from '../../../store/actions';
+import { setLetter } from '../../../store/actions';
 
 const KeyDiv = styled.div`
     background-color: var(--ion-color-success);
@@ -20,8 +20,9 @@ const KeyDiv = styled.div`
     opacity: ${({ opacity }) => (opacity)};
 `;
 
-const Key = ({ name, setLetterAction}) => {
+const Key = ({ name, setLetterAction, enablePlay }) => {
     const [{ isDragging }, drag] = useDrag({
+        canDrag: enablePlay,
         item: { name, type: ItemTypes.BOX },
         end: (item, monitor) => {
             const dropResult = monitor.getDropResult()
@@ -40,7 +41,8 @@ const Key = ({ name, setLetterAction}) => {
     )
 }
 const mapStateToProps = ({ gameReducer }) => ({
-    chosenLetter: gameReducer.letter
+    chosenLetter: gameReducer.letter,
+    enablePlay: gameReducer.enablePlay
 });
 
 const mapDispatchToProps = {

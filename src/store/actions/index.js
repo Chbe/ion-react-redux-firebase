@@ -1,3 +1,3 @@
 export { setTitle, setInvites } from './createGameActions';
 
-export { setLetter, setLoading } from './gameActions';
+export { setLetter, setEnablePlay } from './gameActions';

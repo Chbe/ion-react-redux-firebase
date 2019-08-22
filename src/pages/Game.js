@@ -8,7 +8,7 @@ import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel, IonProgressBar } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
-import { setLoading } from '../store/actions';
+import { setEnablePlay } from '../store/actions';
 
 const Wrapper = styled(FlexboxCenter)`height: 70vh;`
 
@@ -26,7 +26,7 @@ export class Game extends Component {
     }
 
     componentDidMount() {
-        this.setLoading(true);
+        this.setEnablePlay(false);
         this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
             this.props.history.push('/');
@@ -61,7 +61,7 @@ export class Game extends Component {
                     this.setState({ buffer })
             }
             else {
-                this.setLoading(false);
+                this.setEnablePlay(true);
                 clearInterval(this.bufferInterval);
             }
         }, (timeout / 100));
@@ -72,8 +72,8 @@ export class Game extends Component {
         }, timeout);
     }
 
-    setLoading = (bool) => {
-        this.props.setGameLoading(bool);
+    setEnablePlay = (bool) => {
+        this.props.setEnablePlay(bool);
     }
 
     startTimer = () => {
@@ -120,7 +120,7 @@ export class Game extends Component {
         if (this.progressbarTimer)
             clearTimeout(this.progressbarTimer);
 
-        this.setLoading(false);
+        this.setEnablePlay(false);
     }
 
     render() {
@@ -160,11 +160,11 @@ export class Game extends Component {
 const mapStateToProps = ({ firestore, gameReducer }) => ({
     games: firestore.ordered.games,
     chosenLetter: gameReducer.letter,
-    loading: gameReducer.loading
+    enablePlay: gameReducer.enablePlay
 });
 
 const mapDispatchToProps = {
-    setGameLoading: setLoading
+    setEnablePlay: setEnablePlay
 };
 
 export default connect(

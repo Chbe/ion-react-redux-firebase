@@ -5,15 +5,15 @@ import {
 
 const initialState = {
     letter: '',
-    loading: false
+    enablePlay: false
 }
 
 const setLetter = (state, payload) => {
     return { ...state, letter: payload };
 };
 
-const setLoading = (state, payload) => {
-    return { ...state, loading: payload };
+const setEnablePlay = (state, payload) => {
+    return { ...state, enablePlay: payload };
 };
 
 export default (state = initialState, { type, payload }) => {
@@ -22,7 +22,7 @@ export default (state = initialState, { type, payload }) => {
             return setLetter(state, payload);
 
         case GAME_SET_LOADING:
-            return setLoading(state, payload);
+            return setEnablePlay(state, payload);
 
         default:
             return state;
