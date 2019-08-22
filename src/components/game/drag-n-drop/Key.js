@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { setLetter } from '../../../store/actions';
 
 const KeyDiv = styled.div`
-    background-color: var(--ion-color-success);
     color: white;
     margin: 1px;
     cursor: move;
@@ -17,7 +16,10 @@ const KeyDiv = styled.div`
     text-align: center;
     font-size: 30px;
     width: 9vw;
+    transition: background-color .2s ease-in;
     opacity: ${({ opacity }) => (opacity)};
+    background-color: ${({ background }) => (
+        background ? 'var(--ion-color-success);' : 'var(--ion-color-light-shade);')}
 `;
 
 const Key = ({ name, setLetterAction, enablePlay }) => {
@@ -37,7 +39,7 @@ const Key = ({ name, setLetterAction, enablePlay }) => {
     })
     const opacity = isDragging ? 0.4 : 1
     return (
-        <KeyDiv ref={drag} opacity={opacity}>{name}</KeyDiv>
+        <KeyDiv ref={drag} background={enablePlay} opacity={opacity}>{name}</KeyDiv>
     )
 }
 const mapStateToProps = ({ gameReducer }) => ({
