@@ -5,15 +5,19 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import LetterBox from '../components/game/drag-n-drop/LetterBox';
 import Keyboard from '../components/game/drag-n-drop/Keyboard';
-import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel, IonProgressBar, IonIcon, IonButton } from '@ionic/react';
+import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { setEnablePlay } from '../store/actions';
 import { rewind } from 'ionicons/icons';
+import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 
 const Wrapper = styled(FlexboxCenter)`height: 70vh;`
 
 export class Game extends Component {
+    _dndBackend = (isPlatform('android') || isPlatform('ios')
+        ? TouchBackend
+        : HTML5Backend);
     _isMounted = false;
     constructor(props) {
         super(props);
@@ -27,6 +31,7 @@ export class Game extends Component {
     }
 
     componentDidMount() {
+        console.log(this._dndBackend)
         this.setEnablePlay(false);
         this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
@@ -145,14 +150,14 @@ export class Game extends Component {
                     </IonToolbar>
                 </IonHeader>
                 <IonContent className="ion-padding">
-                    {/* TODO: If platform, touch or HTML5 */}
                     <IonProgressBar
                         value={this.state.progressbarValue}
                         buffer={this.state.buffer}
                         reversed={this.state.buffer < 1 ? true : false}
                     ></IonProgressBar>
                     <br />
-                    <DndProvider backend={HTML5Backend}>
+                    {/* TODO: If platform, touch or HTML5 */}
+                    <DndProvider backend={this._dndBackend}>
                         <Wrapper>
                             <FlexboxCenter>
                                 {this.state.game &&
