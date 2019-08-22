@@ -34,11 +34,9 @@ import Game from './pages/Game';
 import Chat from './pages/Chat';
 import Loading from './pages/Loading';
 import styled from 'styled-components';
+import { FlexboxCenter } from './components/UI/DivUI';
 
-const LoginWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const LoginWrapper = styled(FlexboxCenter)`
   height: 100vh;
 `;
 

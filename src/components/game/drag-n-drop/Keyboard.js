@@ -1,6 +1,7 @@
 import React from 'react';
 import Key from './Key';
 import styled from 'styled-components';
+import { FlexboxCenter } from './components/UI/DivUI';
 
 const KeyboardWrapper = styled.div`
     position: fixed;
@@ -8,12 +9,6 @@ const KeyboardWrapper = styled.div`
     left: 0;
     width: 100%;
     margin-bottom: 1em;
-`;
-
-const KeyboardRow = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
 `;
 
 const lettersArr = [
@@ -26,11 +21,11 @@ const Keyboard = () => {
     return (
         <KeyboardWrapper>
             {lettersArr.map((row, i) => {
-                return <KeyboardRow key={i}>
+                return <FlexboxCenter key={i}>
                     {row.map(key => {
                         return <Key key={key} name={key} />
                     })}
-                </KeyboardRow>
+                </FlexboxCenter>
             })}
         </KeyboardWrapper>
     )

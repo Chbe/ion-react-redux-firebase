@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import ItemTypes from './ItemTypes';
 import styled from 'styled-components';
+import { FlexboxCenter } from '../../UI/DivUI';
 
-const BoxWrapper = styled.div`
+const BoxWrapper = styled(FlexboxCenter)`
     height: 10em;
     width: 10em;
     border-radius: 1.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background-color: ${({ bg }) => bg};
 `;
 

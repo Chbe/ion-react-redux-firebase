@@ -28,13 +28,11 @@ import CreateGameModal from '../components/game/create-game/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase';
 import styled from 'styled-components';
 import SkeletonGames from '../components/skeletons/SkeletonGames';
+import { FlexboxCenter } from '../components/UI/DivUI';
 
-const ModalHeader = styled.div`
+const ModalHeader = styled(FlexboxCenter)`
   width: 35px;
   height: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   font-size: 1.5rem;
 `;
 

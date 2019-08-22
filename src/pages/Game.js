@@ -7,14 +7,9 @@ import LetterBox from '../components/game/drag-n-drop/LetterBox';
 import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel, IonProgressBar } from '@ionic/react';
 import styled from 'styled-components';
+import { FlexboxCenter } from '../components/UI/DivUI';
 
-const LetterBoxConstainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-
-const Wrapper = styled(LetterBoxConstainer)`height: 70vh;`
+const Wrapper = styled(FlexboxCenter)`height: 70vh;`
 
 export class Game extends Component {
     _isMounted = false;
@@ -140,10 +135,10 @@ export class Game extends Component {
                     <br />
                     <DndProvider backend={HTML5Backend}>
                         <Wrapper>
-                            <LetterBoxConstainer>
+                            <FlexboxCenter>
                                 {this.state.game.letters &&
                                     <LetterBox lettersArr={this.state.game.letters} />}
-                            </LetterBoxConstainer>
+                            </FlexboxCenter>
                             <Keyboard />
                         </Wrapper>
                     </DndProvider>
