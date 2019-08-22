@@ -8,6 +8,7 @@ import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel, IonProgressBar } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
+import { setLoading } from '../store/actions';
 
 const Wrapper = styled(FlexboxCenter)`height: 70vh;`
 
@@ -25,6 +26,7 @@ export class Game extends Component {
     }
 
     componentDidMount() {
+        this.setLoading(true);
         this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
             this.props.history.push('/');
@@ -59,6 +61,7 @@ export class Game extends Component {
                     this.setState({ buffer })
             }
             else {
+                this.setLoading(false);
                 clearInterval(this.bufferInterval);
             }
         }, (timeout / 100));
@@ -67,6 +70,10 @@ export class Game extends Component {
             this.startTimer();
             this.startPogressbarTimer(0);
         }, timeout);
+    }
+
+    setLoading = (bool) => {
+        this.props.setGameLoading(bool);
     }
 
     startTimer = () => {
@@ -88,7 +95,7 @@ export class Game extends Component {
                     this.setState({ progressbarValue })
             }
             else {
-                clearInterval(this.progressbarTimerz);
+                clearInterval(this.progressbarTimer);
             }
         }, 25000 / 100);
     }
@@ -96,7 +103,7 @@ export class Game extends Component {
     finishRound = () => {
         this.cleanUp();
         const letter = this.props.chosenLetter;
-        if(letter) {
+        if (letter) {
             console.log('Letter:', letter)
         } else {
             console.log('No letter')
@@ -112,6 +119,8 @@ export class Game extends Component {
             clearTimeout(this.startTimer);
         if (this.progressbarTimer)
             clearTimeout(this.progressbarTimer);
+
+        this.setLoading(false);
     }
 
     render() {
@@ -150,10 +159,13 @@ export class Game extends Component {
 
 const mapStateToProps = ({ firestore, gameReducer }) => ({
     games: firestore.ordered.games,
-    chosenLetter: gameReducer.letter
+    chosenLetter: gameReducer.letter,
+    loading: gameReducer.loading
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+    setGameLoading: setLoading
+};
 
 export default connect(
     mapStateToProps,
