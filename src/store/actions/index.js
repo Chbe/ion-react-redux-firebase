@@ -1,3 +1,3 @@
-export { setTitle, setInvites } from './createGameActions';
+export { createGameCleanUp, setTitle, setInvites } from './createGameActions';
 
-export { cleanup, setLetter, setEnablePlay, setLettersArray } from './gameActions';
+export { inGameCleanUp, setLetter, setEnablePlay, setLettersArray } from './gameActions';

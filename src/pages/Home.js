@@ -29,6 +29,7 @@ import { useFirestore } from 'react-redux-firebase';
 import styled from 'styled-components';
 import SkeletonGames from '../components/skeletons/SkeletonGames';
 import { FlexboxCenter } from '../components/UI/DivUI';
+import { createGameCleanUp } from '../store/actions';
 
 const ModalHeader = styled(FlexboxCenter)`
   width: 35px;
@@ -47,7 +48,7 @@ const formatDate = (date) => {
   return formatted_date;
 }
 
-const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
+const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   const firestore = useFirestore();
   const [showModal, setShowModal] = useState(false);
   const uids = gameInvites.map(player => {
@@ -72,8 +73,14 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
         .collection('games')
         .add(newGame);
 
-      setShowModal(false);
+        toggleModal(false);
     }
+  }
+
+  const toggleModal = (bool) => {
+    setShowModal(bool);
+    if (!bool)
+      cleanUp();
   }
 
   // TODO: Filter different list for invites, users turn, active and pending. In that order.
@@ -93,7 +100,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
           </IonButtons>
 
           <IonButtons slot="end">
-            <IonButton onClick={() => setShowModal(true)}>
+            <IonButton onClick={() => toggleModal(true)}>
               <IonLabel>New</IonLabel>
               <IonIcon slot="end" icon={add}></IonIcon>
             </IonButton>
@@ -106,8 +113,9 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
         {/* Create game modal */}
         <IonModal
           isOpen={showModal}
-          onDidDismiss={() => setShowModal(false)}>
-          <ModalHeader onClick={() => setShowModal(false)}>
+          // TODO: onDidDismiss is causing couble action dispath
+          onDidDismiss={() => toggleModal(false)}>
+          <ModalHeader onClick={() => toggleModal(false)}>
             <IonRippleEffect></IonRippleEffect>
             <IonIcon slot='start' icon={close}></IonIcon>
           </ModalHeader>
@@ -191,7 +199,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites }) => {
             })}
           </IonList> : <SkeletonGames />
         }
-        
+
       </IonContent>
     </>
   )
@@ -203,6 +211,10 @@ const mapStateToProps = ({ firebase, firestore, createGameReducer }) => ({
   gameTitle: createGameReducer.title,
   gameInvites: createGameReducer.invites
 });
+
+const mapDispatchToProps = {
+  cleanUp: createGameCleanUp
+};
 
 export default compose(
   //withRouter, if you use react router to redirect
@@ -220,5 +232,5 @@ export default compose(
       ['lastUpdated', 'desc']
     ]
   }]),
-  connect(mapStateToProps)
+  connect(mapStateToProps, mapDispatchToProps)
 )(Home)

@@ -5,10 +5,10 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import LetterBox from '../components/game/drag-n-drop/LetterBox';
 import Keyboard from '../components/game/drag-n-drop/Keyboard';
-import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton, IonItem } from '@ionic/react';
+import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
-import { setEnablePlay, setLettersArray, cleanup } from '../store/actions';
+import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
 import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 
@@ -214,7 +214,7 @@ const mapStateToProps = ({ firestore, gameReducer }) => ({
 const mapDispatchToProps = {
     setEnablePlay: setEnablePlay,
     setLettersArray: setLettersArray,
-    cleanUp: cleanup
+    cleanUp: inGameCleanUp
 };
 
 export default connect(

@@ -1,8 +1,8 @@
 import {
-    GAME_SET_CLEANUP,
-    GAME_SET_LETTER,
-    GAME_SET_LOADING,
-    GAME_SET_LETTERS_ARRAY
+    IN_GAME_CLEANUP,
+    IN_GAME_SET_LETTER,
+    IN_GAME_SET_LOADING,
+    IN_GAME_SET_LETTERS_ARRAY
 } from '../actionTypes';
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
 }
 
 const cleanUp = state => {
-    return { ...state, letter: '', enablePlay: false, lettersArray: [] }
+    return { ...state, ...initialState}
 }
 
 const setLetter = (state, payload) => {
@@ -29,16 +29,16 @@ const setLettersArray = (state, payload) => {
 
 export default (state = initialState, { type, payload }) => {
     switch (type) {
-        case GAME_SET_CLEANUP:
+        case IN_GAME_CLEANUP:
             return cleanUp(state);
 
-        case GAME_SET_LETTER:
+        case IN_GAME_SET_LETTER:
             return setLetter(state, payload);
 
-        case GAME_SET_LOADING:
+        case IN_GAME_SET_LOADING:
             return setEnablePlay(state, payload);
 
-        case GAME_SET_LETTERS_ARRAY:
+        case IN_GAME_SET_LETTERS_ARRAY:
             return setLettersArray(state, payload);
 
         default:
