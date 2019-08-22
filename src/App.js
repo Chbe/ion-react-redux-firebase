@@ -47,7 +47,7 @@ const App = ({ firebase, auth }) => {
         <IonPage>
           {
             !isLoaded(auth)
-              ? <Loading /> // TODO: Loading page
+              ? <Loading /> 
               : isEmpty(auth)
                 ? <LoginWrapper>
                   <StyledFirebaseAuth

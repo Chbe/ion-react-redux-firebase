@@ -85,7 +85,6 @@ const LetterBox = ({ lettersArr = [] }) => {
     }, []);
 
     return (
-        // TODO: Styled copmponent
         <BoxWrapper ref={drop} bg={backgroundColor}>
             <LetterDiv className={className}>{letter}</LetterDiv>
             {/* {isActive ? 'Release to drop' : 'Drag a box here'} */}

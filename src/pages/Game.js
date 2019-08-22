@@ -5,10 +5,11 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import LetterBox from '../components/game/drag-n-drop/LetterBox';
 import Keyboard from '../components/game/drag-n-drop/Keyboard';
-import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel, IonProgressBar } from '@ionic/react';
+import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonLabel, IonProgressBar, IonIcon, IonButton } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { setEnablePlay } from '../store/actions';
+import { rewind } from 'ionicons/icons';
 
 const Wrapper = styled(FlexboxCenter)`height: 70vh;`
 
@@ -47,7 +48,7 @@ export class Game extends Component {
     }
 
     prepareForGameStart = (game) => {
-        const length = game.letters.length ?
+        const length = game.letters ?
             game.letters.length : 0;
 
         const timeout = (!!length ?
@@ -131,7 +132,16 @@ export class Game extends Component {
                         <IonButtons slot="start">
                             <IonBackButton defaultHref="/" />
                         </IonButtons>
-                        <IonLabel slot='end'>{this.state.timeLeft}</IonLabel>
+                        {this.state.game.letters &&
+                            <IonButtons slot="end">
+                                <IonButton
+                                    size="large"
+                                    shape="round"
+                                    onClick={() => console.log('show letters')}>
+                                    <IonIcon icon={rewind}></IonIcon>
+                                </IonButton>
+                            </IonButtons>
+                        }
                     </IonToolbar>
                 </IonHeader>
                 <IonContent className="ion-padding">
@@ -145,7 +155,7 @@ export class Game extends Component {
                     <DndProvider backend={HTML5Backend}>
                         <Wrapper>
                             <FlexboxCenter>
-                                {this.state.game.letters &&
+                                {this.state.game &&
                                     <LetterBox lettersArr={this.state.game.letters} />}
                             </FlexboxCenter>
                             <Keyboard />
