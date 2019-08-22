@@ -8,7 +8,6 @@ import { setLetter } from '../../../store/actions';
 const KeyDiv = styled.div`
     color: white;
     margin: 1px;
-    cursor: move;
     float: left;
     border-radius: 5px;
     height: 6vh;
@@ -17,9 +16,9 @@ const KeyDiv = styled.div`
     font-size: 30px;
     width: 9vw;
     transition: background-color .2s ease-in;
+    cursor: ${({ cursor }) => (cursor)};
     opacity: ${({ opacity }) => (opacity)};
-    background-color: ${({ background }) => (
-        background ? 'var(--ion-color-success);' : 'var(--ion-color-light-shade);')}
+    background-color: ${({ background }) => (background)};
 `;
 
 const Key = ({ name, setLetterAction, enablePlay }) => {
@@ -37,9 +36,20 @@ const Key = ({ name, setLetterAction, enablePlay }) => {
             isDragging: monitor.isDragging(),
         }),
     })
-    const opacity = isDragging ? 0.4 : 1
+    const opacity = isDragging ? 0.4 : 1;
+    const background = enablePlay ?
+        'var(--ion-color-success);' :
+        'var(--ion-color-light-shade);';
+    const cursor = enablePlay ?
+        'move;' :
+        'not-allowed;';
     return (
-        <KeyDiv ref={drag} background={enablePlay} opacity={opacity}>{name}</KeyDiv>
+        <KeyDiv
+            ref={drag}
+            background={background}
+            cursor={cursor}
+            opacity={opacity}>{name}
+        </KeyDiv>
     )
 }
 const mapStateToProps = ({ gameReducer }) => ({

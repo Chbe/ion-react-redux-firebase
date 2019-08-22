@@ -5,6 +5,30 @@ const db = admin.firestore();
 const settings = { timestampsInSnapshots: true };
 db.settings(settings);
 
+/** Game funcitons: */
+
+// export const letterAdded = functions.firestore
+//     .document("games/{gameId}/letters")
+//     .onUpdate(async (snap, context) => {
+//         const gameId = context.params.gameId;
+
+//         // TODO: Set next user?
+//         // return db.collection('chats').doc(gameId).delete();
+//         return null;
+//     });
+
+// export const pointChange = functions.firestore
+//     .document("games/{gameId}/letters")
+//     .onUpdate(async (snap, context) => {
+//         const gameId = context.params.gameId;
+
+//         // TODO: Set next user?
+//         // return db.collection('chats').doc(gameId).delete();
+//         return null;
+//     });
+
+/** Chat functions: */
+
 export const createChat = functions.firestore
     .document("games/{gameId}")
     .onCreate(async (snap, context) => {
