@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { FlexboxCenter } from '../components/UI/DivUI';
 
 const Container = styled(FlexboxCenter)`
     height: 100vh;

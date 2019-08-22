@@ -1,7 +1,7 @@
 import React from 'react';
 import Key from './Key';
 import styled from 'styled-components';
-import { FlexboxCenter } from './components/UI/DivUI';
+import { FlexboxCenter } from '../../UI/DivUI';
 
 const KeyboardWrapper = styled.div`
     position: fixed;
