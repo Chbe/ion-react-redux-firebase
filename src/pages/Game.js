@@ -8,9 +8,9 @@ import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton, IonItem } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
-import { setEnablePlay } from '../store/actions';
+import { setEnablePlay, setLettersArray, cleanup } from '../store/actions';
 import { rewind, glasses, eye, send } from 'ionicons/icons';
-import { isPlatform, getPlatforms } from '@ionic/react'; // TODO: Should it be core or react????
+import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 
 const Wrapper = styled(FlexboxCenter)`
     height: 90vh;
@@ -29,9 +29,7 @@ const Button = styled(IonButton)`
     transition: background-color .2s ease-in;
 `;
 
-
 export class Game extends Component {
-    // TODO: Dev: HTML5 and prod touch?
     _dndBackend = isPlatform('desktop')
         ? HTML5Backend
         : TouchBackend;
@@ -48,8 +46,8 @@ export class Game extends Component {
         };
     }
 
-    componentDidMount() {
-        this.setEnablePlay(false);
+    UNSAFE_componentWillMount() {
+        this.props.setEnablePlay(false);
         this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
             this.props.history.push('/');
@@ -57,9 +55,15 @@ export class Game extends Component {
             const gameId = this.props.match.params.gameId;
             const game = this.props.games.find(game => game.id == gameId);
             this.safeStateUpdate({ game, gameId });
+            console.log(game.letters)
+            this.props.setLettersArray(game.letters);
 
             this.prepareForGameStart(game);
         }
+    }
+
+    componentDidMount() {
+
     }
 
     componentWillUnmount() {
@@ -86,7 +90,7 @@ export class Game extends Component {
                 this.safeStateUpdate({ buffer })
             }
             else {
-                this.setEnablePlay(true);
+                this.props.setEnablePlay(true);
                 clearInterval(this.bufferInterval);
             }
         }, (timeout / 100));
@@ -96,10 +100,6 @@ export class Game extends Component {
             this.startPogressbarTimer(0);
             this.safeStateUpdate({ progressbarColor: 'success' });
         }, timeout);
-    }
-
-    setEnablePlay = (bool) => {
-        this.props.setEnablePlay(bool);
     }
 
     startTimer = () => {
@@ -144,6 +144,7 @@ export class Game extends Component {
     }
 
     cleanUp = () => {
+        this.props.cleanUp();
         if (this.startInterval)
             clearInterval(this.startInterval);
         if (this.bufferInterval)
@@ -152,8 +153,6 @@ export class Game extends Component {
             clearTimeout(this.startTimer);
         if (this.progressbarTimer)
             clearTimeout(this.progressbarTimer);
-
-        this.setEnablePlay(false);
     }
 
     render() {
@@ -186,7 +185,7 @@ export class Game extends Component {
                             buffer={this.state.buffer}
                             reversed={this.state.buffer < 1 ? true : false}
                         ></IonProgressBar>
-                        {this.state.game.letters && <LetterBox lettersArr={this.state.game.letters} />}
+                        <LetterBox />
                         <div>
                             <ActionsWrapper>
                                 <Button disabled={!this.props.enablePlay} fill="outline">
@@ -215,7 +214,9 @@ const mapStateToProps = ({ firestore, gameReducer }) => ({
 });
 
 const mapDispatchToProps = {
-    setEnablePlay: setEnablePlay
+    setEnablePlay: setEnablePlay,
+    setLettersArray: setLettersArray,
+    cleanUp: cleanup
 };
 
 export default connect(

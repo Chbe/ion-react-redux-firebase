@@ -28,7 +28,7 @@ const LetterDiv = styled.div`
     }
 `;
 
-const LetterBox = ({ lettersArr = [], enablePlay }) => {
+const LetterBox = ({ lettersArray, enablePlay }) => {
     let isCancelled = false;
     let letterIndex = 0;
     const [letter, setLetter] = useState('');
@@ -69,12 +69,12 @@ const LetterBox = ({ lettersArr = [], enablePlay }) => {
 
     const animateLetters = (time) => {
         return setTimeout(() => {
-            if (letterIndex < lettersArr.length) {
+            if (letterIndex < lettersArray.length) {
                 setTimeout(() => {
                     updateClassState('letterCountdown puffer');
                 }, 600);
                 updateClassState('letterCountdown');
-                updateLetterState(lettersArr[letterIndex]);
+                updateLetterState(lettersArray[letterIndex]);
                 animateLetters(1200);
             }
             else {
@@ -87,7 +87,10 @@ const LetterBox = ({ lettersArr = [], enablePlay }) => {
 
     useEffect(() => {
         isCancelled = false;
-        let timer = animateLetters(500);
+        console.log(lettersArray)
+        if (lettersArray && !!lettersArray.length) {
+            var timer = animateLetters(500);
+        }
 
         return () => {
             isCancelled = true;
@@ -103,7 +106,8 @@ const LetterBox = ({ lettersArr = [], enablePlay }) => {
     )
 }
 const mapStateToProps = ({ gameReducer }) => ({
-    enablePlay: gameReducer.enablePlay
+    enablePlay: gameReducer.enablePlay,
+    lettersArray: gameReducer.lettersArray
 });
 
 const mapDispatchToProps = {};
