@@ -9,12 +9,15 @@ const BoxWrapper = styled(FlexboxCenter)`
     height: 10em;
     width: 10em;
     border-radius: 1.5rem;
-    background-color: ${({ bg }) => bg};
-    transition: background-color .2s ease-in;
+    // background-color: ${({ bg }) => bg};
+    border-width: 5px;
+    border-style: solid;
+    border-color: ${({ bg }) => bg};
+    transition: border-color .2s ease-in;
 `;
 
 const LetterDiv = styled.div`
-    color: white;
+    color: ${({ color }) => color};
     font-size: 8rem;
     opacity: 1;
     transition: opacity 0.4s ease;
@@ -55,6 +58,9 @@ const LetterBox = ({ lettersArr = [], enablePlay }) => {
     let backgroundColor = enablePlay ?
         'var(--ion-color-success)' :
         'var(--ion-color-light-shade)';
+    let letterColor = enablePlay ?
+        'var(--ion-color-success)' :
+        'var(--ion-color-primary)';
     if (isActive) {
         backgroundColor = 'var(--ion-color-success-tint)'
     } else if (canDrop) {
@@ -80,6 +86,7 @@ const LetterBox = ({ lettersArr = [], enablePlay }) => {
     };
 
     useEffect(() => {
+        isCancelled = false;
         let timer = animateLetters(500);
 
         return () => {
@@ -90,7 +97,7 @@ const LetterBox = ({ lettersArr = [], enablePlay }) => {
 
     return (
         <BoxWrapper ref={drop} bg={backgroundColor}>
-            <LetterDiv className={className}>{letter}</LetterDiv>
+            <LetterDiv color={letterColor} className={className}>{letter}</LetterDiv>
             {/* {isActive ? 'Release to drop' : 'Drag a box here'} */}
         </BoxWrapper>
     )

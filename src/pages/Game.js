@@ -49,8 +49,6 @@ export class Game extends Component {
     }
 
     componentDidMount() {
-        console.log(this._dndBackend);
-        console.log(getPlatforms())
         this.setEnablePlay(false);
         this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
@@ -58,9 +56,7 @@ export class Game extends Component {
         } else {
             const gameId = this.props.match.params.gameId;
             const game = this.props.games.find(game => game.id == gameId);
-
-            if (this._isMounted)
-                this.setState({ game, gameId });
+            this.safeStateUpdate({ game, gameId });
 
             this.prepareForGameStart(game);
         }
@@ -69,6 +65,11 @@ export class Game extends Component {
     componentWillUnmount() {
         this._isMounted = false;
         this.cleanUp();
+    }
+
+    safeStateUpdate = (val) => {
+        if (this._isMounted)
+            this.setState(val);
     }
 
     prepareForGameStart = (game) => {
@@ -82,8 +83,7 @@ export class Game extends Component {
         this.bufferInterval = setInterval(() => {
             if (buffer < 1) {
                 buffer += 0.01;
-                if (this._isMounted)
-                    this.setState({ buffer })
+                this.safeStateUpdate({ buffer })
             }
             else {
                 this.setEnablePlay(true);
@@ -94,7 +94,7 @@ export class Game extends Component {
         this.startGameTimer = setTimeout(() => {
             this.startTimer();
             this.startPogressbarTimer(0);
-            this.setState({ progressbarColor: 'success' });
+            this.safeStateUpdate({ progressbarColor: 'success' });
         }, timeout);
     }
 
@@ -105,8 +105,7 @@ export class Game extends Component {
     startTimer = () => {
         this.startInterval = setInterval(() => {
             const timeLeft = this.state.timeLeft - 1;
-            if (this._isMounted)
-                this.setState({ timeLeft })
+            this.safeStateUpdate({ timeLeft })
             if (timeLeft === 0) {
                 this.finishRound();
             }
@@ -117,13 +116,12 @@ export class Game extends Component {
         this.progressbarTimer = setInterval(() => {
             if (progressbarValue < 1) {
                 progressbarValue += 0.001;
-                if (this._isMounted)
-                    this.setState({ progressbarValue });
+                this.safeStateUpdate({ progressbarValue });
 
                 if (progressbarValue > .5 && progressbarValue < .85)
-                    this.setState({ progressbarColor: 'warning' });
+                    this.safeStateUpdate({ progressbarColor: 'warning' });
                 else if (progressbarValue >= .85)
-                    this.setState({ progressbarColor: 'danger' });
+                    this.safeStateUpdate({ progressbarColor: 'danger' });
 
             }
             else {
@@ -168,12 +166,13 @@ export class Game extends Component {
                         </IonButtons>
                         {this.state.game.letters &&
                             <IonButtons slot="end">
-                                <IonButton
+                                <Button
+                                    disabled={!this.props.enablePlay}
                                     size="large"
                                     shape="round"
                                     onClick={() => console.log('show letters')}>
                                     <IonIcon icon={rewind}></IonIcon>
-                                </IonButton>
+                                </Button>
                             </IonButtons>
                         }
                     </IonToolbar>
@@ -187,7 +186,7 @@ export class Game extends Component {
                             buffer={this.state.buffer}
                             reversed={this.state.buffer < 1 ? true : false}
                         ></IonProgressBar>
-                        <LetterBox lettersArr={this.state.game && this.state.game.letters} />
+                        {this.state.game.letters && <LetterBox lettersArr={this.state.game.letters} />}
                         <div>
                             <ActionsWrapper>
                                 <Button disabled={!this.props.enablePlay} fill="outline">
