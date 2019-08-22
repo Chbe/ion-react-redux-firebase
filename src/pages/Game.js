@@ -22,6 +22,7 @@ const ActionsWrapper = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-around;
+    padding: 1em;
 `;
 
 const Button = styled(IonButton)`
@@ -42,7 +43,8 @@ export class Game extends Component {
             game: {},
             timeLeft: 25,
             progressbarValue: 0,
-            buffer: 0
+            buffer: 0,
+            progressbarColor: 'primary'
         };
     }
 
@@ -92,6 +94,7 @@ export class Game extends Component {
         this.startGameTimer = setTimeout(() => {
             this.startTimer();
             this.startPogressbarTimer(0);
+            this.setState({ progressbarColor: 'success' });
         }, timeout);
     }
 
@@ -115,7 +118,13 @@ export class Game extends Component {
             if (progressbarValue < 1) {
                 progressbarValue += 0.001;
                 if (this._isMounted)
-                    this.setState({ progressbarValue })
+                    this.setState({ progressbarValue });
+
+                if (progressbarValue > .5 && progressbarValue < .85)
+                    this.setState({ progressbarColor: 'warning' });
+                else if (progressbarValue >= .85)
+                    this.setState({ progressbarColor: 'danger' });
+
             }
             else {
                 clearInterval(this.progressbarTimer);
@@ -173,12 +182,13 @@ export class Game extends Component {
                 <DndProvider backend={this._dndBackend}>
                     <Wrapper>
                         <IonProgressBar
+                            color={this.state.progressbarColor}
                             value={this.state.progressbarValue}
                             buffer={this.state.buffer}
                             reversed={this.state.buffer < 1 ? true : false}
                         ></IonProgressBar>
                         <LetterBox lettersArr={this.state.game && this.state.game.letters} />
-                        <div style={{ padding: '1em' }}>
+                        <div>
                             <ActionsWrapper>
                                 <Button disabled={!this.props.enablePlay} fill="outline">
                                     <IonIcon slot="icon-only" icon={send}></IonIcon>
