@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux'
 import { useDrop } from 'react-dnd';
 import ItemTypes from './ItemTypes';
 import styled from 'styled-components';
@@ -9,6 +10,7 @@ const BoxWrapper = styled(FlexboxCenter)`
     width: 10em;
     border-radius: 1.5rem;
     background-color: ${({ bg }) => bg};
+    transition: background-color .2s ease-in;
 `;
 
 const LetterDiv = styled.div`
@@ -23,7 +25,7 @@ const LetterDiv = styled.div`
     }
 `;
 
-const LetterBox = ({ lettersArr = [] }) => {
+const LetterBox = ({ lettersArr = [], enablePlay }) => {
     let isCancelled = false;
     let letterIndex = 0;
     const [letter, setLetter] = useState('');
@@ -50,7 +52,9 @@ const LetterBox = ({ lettersArr = [] }) => {
         }),
     })
     const isActive = canDrop && isOver
-    let backgroundColor = 'var(--ion-color-success)'
+    let backgroundColor = enablePlay ?
+        'var(--ion-color-success)' :
+        'var(--ion-color-light-shade)';
     if (isActive) {
         backgroundColor = 'var(--ion-color-success-tint)'
     } else if (canDrop) {
@@ -91,4 +95,13 @@ const LetterBox = ({ lettersArr = [] }) => {
         </BoxWrapper>
     )
 }
-export default LetterBox
+const mapStateToProps = ({ gameReducer }) => ({
+    enablePlay: gameReducer.enablePlay
+});
+
+const mapDispatchToProps = {};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(LetterBox)

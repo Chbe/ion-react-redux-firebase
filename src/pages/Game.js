@@ -24,6 +24,11 @@ const ActionsWrapper = styled.div`
     justify-content: space-around;
 `;
 
+const Button = styled(IonButton)`
+    transition: background-color .2s ease-in;
+`;
+
+
 export class Game extends Component {
     // TODO: Dev: HTML5 and prod touch?
     _dndBackend = isPlatform('desktop')
@@ -108,14 +113,14 @@ export class Game extends Component {
     startPogressbarTimer = (progressbarValue) => {
         this.progressbarTimer = setInterval(() => {
             if (progressbarValue < 1) {
-                progressbarValue += 0.01;
+                progressbarValue += 0.001;
                 if (this._isMounted)
                     this.setState({ progressbarValue })
             }
             else {
                 clearInterval(this.progressbarTimer);
             }
-        }, 25000 / 100);
+        }, (25000 / 1000));
     }
 
     finishRound = () => {
@@ -175,15 +180,15 @@ export class Game extends Component {
                         <LetterBox lettersArr={this.state.game && this.state.game.letters} />
                         <div style={{ padding: '1em' }}>
                             <ActionsWrapper>
-                                <IonButton disabled={!this.props.enablePlay} fill="outline">
+                                <Button disabled={!this.props.enablePlay} fill="outline">
                                     <IonIcon slot="icon-only" icon={send}></IonIcon>
-                                </IonButton>
-                                <IonButton disabled={!this.props.enablePlay} fill="outline">
+                                </Button>
+                                <Button disabled={!this.props.enablePlay} fill="outline">
                                     <IonIcon slot="icon-only" icon={glasses}></IonIcon>
-                                </IonButton>
-                                <IonButton disabled={!this.props.enablePlay} fill="outline">
+                                </Button>
+                                <Button disabled={!this.props.enablePlay} fill="outline">
                                     <IonIcon slot="icon-only" icon={eye}></IonIcon>
-                                </IonButton>
+                                </Button>
                             </ActionsWrapper>
                             <Keyboard />
                         </div>
