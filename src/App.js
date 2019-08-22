@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonPage, IonRouterOutlet } from '@ionic/react';
+import { IonApp, IonPage, IonRouterOutlet, IonContent } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import { connect } from 'react-redux';
@@ -33,6 +33,14 @@ import Profile from './pages/Profile';
 import Game from './pages/Game';
 import Chat from './pages/Chat';
 import Loading from './pages/Loading';
+import styled from 'styled-components';
+
+const LoginWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
 
 const App = ({ firebase, auth }) => {
   return (
@@ -43,27 +51,29 @@ const App = ({ firebase, auth }) => {
             !isLoaded(auth)
               ? <Loading /> // TODO: Loading page
               : isEmpty(auth)
-                ? <StyledFirebaseAuth
-                  uiConfig={{
-                    signInOptions: [
-                      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                      firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID,
-                      {
-                        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-                        signInMethod: firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
-                      }
-                    ],
-                    callbacks: {
-                      signInSuccessWithAuthResult: (authResult, redirectUrl) => {
-                        firebase.handleRedirectResult(authResult).then(() => {
-                          // history.push(redirectUrl); if you use react router to redirect
-                        });
-                        return false;
+                ? <LoginWrapper>
+                  <StyledFirebaseAuth
+                    uiConfig={{
+                      signInOptions: [
+                        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                        firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID,
+                        {
+                          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                          signInMethod: firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
+                        }
+                      ],
+                      callbacks: {
+                        signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+                          firebase.handleRedirectResult(authResult).then(() => {
+                            // history.push(redirectUrl); if you use react router to redirect
+                          });
+                          return false;
+                        },
                       },
-                    },
-                  }}
-                  firebaseAuth={firebase.auth()}
-                />
+                    }}
+                    firebaseAuth={firebase.auth()}
+                  />
+                </LoginWrapper>
                 : <IonRouterOutlet>
                   <Route path="/home" component={Home} exact />
                   <Route path="/profile" component={Profile} exact />
