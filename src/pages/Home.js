@@ -31,6 +31,10 @@ import SkeletonGames from '../components/skeletons/SkeletonGames';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { createGameCleanUp } from '../store/actions';
 
+const ActivePendingGame = styled(IonCard)`
+  box-shadow: 0 4px 16px ${({ boxShadow }) => (boxShadow)};
+`;
+
 const ModalHeader = styled(FlexboxCenter)`
   width: 35px;
   height: 35px;
@@ -73,7 +77,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         .collection('games')
         .add(newGame);
 
-        toggleModal(false);
+      toggleModal(false);
     }
   }
 
@@ -167,8 +171,12 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
             {games.map(game => {
               if (game.acceptedInvites.includes(profile.uid)) {
                 // Status active or pending
+                const boxShadow = game.activePlayer.uid === profile.uid
+                ? 'var(--ion-color-success)'
+                : 'rgba(0,0,0,.12)'
                 const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
-                return <IonCard
+                return <ActivePendingGame
+                  boxShadow={boxShadow}
                   key={game.id}
                   onclick={(e) => {
                     e.preventDefault();
@@ -194,7 +202,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
                   <IonCardContent>
                     {formatDate(game.lastUpdated)}
                   </IonCardContent>
-                </IonCard>
+                </ActivePendingGame>
               }
             })}
           </IonList> : <SkeletonGames />
