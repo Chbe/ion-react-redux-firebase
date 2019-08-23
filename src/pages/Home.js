@@ -31,8 +31,9 @@ import SkeletonGames from '../components/skeletons/SkeletonGames';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { createGameCleanUp } from '../store/actions';
 
+// TODO: hehe some design focus maybe?
 const ActivePendingGame = styled(IonCard)`
-  box-shadow: 0 4px 16px ${({ boxShadow }) => (boxShadow)};
+  // box-shadow: 0 4px 16px ${({ boxShadow }) => (boxShadow)};
 `;
 
 const ModalHeader = styled(FlexboxCenter)`

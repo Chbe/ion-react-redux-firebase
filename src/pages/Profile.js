@@ -43,8 +43,7 @@ const Profile = ({ profile, firebase }) => {
                 <IonCard>
                     <IonItem>
                         <IonAvatar>
-                            {profile &&
-                                profile.photoURL ?
+                            {profile.photoURL ?
                                 <img src={profile.photoURL}
                                     style={{
                                         width: '10em'

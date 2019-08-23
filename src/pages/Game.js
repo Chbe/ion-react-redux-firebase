@@ -132,22 +132,33 @@ export class Game extends Component {
         }, (25000 / 1000));
     }
 
+    setScoreboard = () => {
+        const displayName = this.props.displayName;
+        const uid = this.props.uid;
+        let scoreboard = this.state.game.scoreboard;
+        scoreboard = !!scoreboard.length
+            ? scoreboard.map(obj => {
+                if (obj.uid === uid) {
+                    const score = obj.score + 1;
+                    return {
+                        ...obj,
+                        score
+                    }
+                }
+                return obj;
+            })
+            : [{ uid, displayName, score: 1 }];
+
+        return scoreboard;
+    }
+
     finishRound = () => {
         const letter = this.props.chosenLetter;
         if (letter) {
             this.props.addLetter([...this.props.lettersArray, letter]);
         } else {
-            // Set minus point to user
-            // TODO: When point is changed for a user - firebase function?
-            // const scoreboard = this.props.game.scoreboard;
-            // const score = this.props.game.scoreboard[this.props.uid]
-            //     ? this.props.game.scoreboard[this.props.uid].score
-            //     : { displayName, score };
-            // this.props.setUserScore([scoreboard, {
-            //     uid: this.props.uid,
-            //     displayName: this.props.displayName,
-            //     score
-            // }])
+            const scoreboard = this.setScoreboard();
+            this.props.setUserScore(scoreboard)
         }
         this.cleanUp();
     }
@@ -197,7 +208,10 @@ export class Game extends Component {
                         <LetterBox />
                         <div>
                             <ActionsWrapper>
-                                <Button disabled={!this.props.enablePlay} fill="outline">
+                                <Button
+                                    onClick={this.finishRound}
+                                    disabled={!this.props.enablePlay}
+                                    fill="outline">
                                     <IonIcon slot="icon-only" icon={send}></IonIcon>
                                 </Button>
                                 <Button disabled={!this.props.enablePlay} fill="outline">
