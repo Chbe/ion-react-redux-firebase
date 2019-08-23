@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { compose } from 'redux';
-import { firestoreConnect, withFirebase, firebaseConnect } from 'react-redux-firebase';
 import { logOut } from 'ionicons/icons';
 import {
     IonContent,

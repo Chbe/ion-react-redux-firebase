@@ -70,7 +70,8 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         players: [...gameInvites, { uid, displayName, photoURL }],
         playersUid: [...uids, { uid }],
         status: "pending",
-        title: gameTitle
+        title: gameTitle,
+        scoreboard: []
       };
 
       firestore

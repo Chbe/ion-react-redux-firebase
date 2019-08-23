@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { withHandlers } from 'recompose';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
@@ -11,6 +13,7 @@ import { FlexboxCenter } from '../components/UI/DivUI';
 import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
 import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
+import { withFirestore } from 'react-redux-firebase';
 
 const Wrapper = styled(FlexboxCenter)`
     height: 90vh;
@@ -34,6 +37,7 @@ export class Game extends Component {
         ? HTML5Backend
         : TouchBackend;
     _isMounted = false;
+
     constructor(props) {
         super(props);
 
@@ -129,16 +133,23 @@ export class Game extends Component {
     }
 
     finishRound = () => {
-        this.cleanUp();
         const letter = this.props.chosenLetter;
         if (letter) {
-            // Push letter to firestore
-            console.log('Letter:', letter)
+            this.props.addLetter([...this.props.lettersArray, letter]);
         } else {
             // Set minus point to user
             // TODO: When point is changed for a user - firebase function?
-            console.log('No letter')
+            // const scoreboard = this.props.game.scoreboard;
+            // const score = this.props.game.scoreboard[this.props.uid]
+            //     ? this.props.game.scoreboard[this.props.uid].score
+            //     : { displayName, score };
+            // this.props.setUserScore([scoreboard, {
+            //     uid: this.props.uid,
+            //     displayName: this.props.displayName,
+            //     score
+            // }])
         }
+        this.cleanUp();
     }
 
     cleanUp = () => {
@@ -205,10 +216,13 @@ export class Game extends Component {
     }
 }
 
-const mapStateToProps = ({ firestore, gameReducer }) => ({
+const mapStateToProps = ({ firestore, firebase, gameReducer }) => ({
+    uid: firebase.profile.uid,
+    displayName: firebase.profile.displayName,
     games: firestore.ordered.games,
     chosenLetter: gameReducer.letter,
-    enablePlay: gameReducer.enablePlay
+    enablePlay: gameReducer.enablePlay,
+    lettersArray: gameReducer.lettersArray
 });
 
 const mapDispatchToProps = {
@@ -217,7 +231,25 @@ const mapDispatchToProps = {
     cleanUp: inGameCleanUp
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Game)
+export default compose(
+    withFirestore,
+    withHandlers({
+        addLetter: ({ firestore, match }) => (lettersArr) => {
+            const gameId = match.params.gameId;
+            return firestore.update({
+                collection: `games`,
+                doc: gameId
+            }, { letters: lettersArr })
+        },
+        setUserScore: ({ firestore, match }) => (scoreboard) => {
+            const gameId = match.params.gameId;
+            return firestore.update({
+                collection: `games`,
+                doc: gameId
+            }, { scoreboard: scoreboard })
+        }
+    }),
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    ))(Game)
