@@ -155,7 +155,10 @@ export class Game extends Component {
     finishRound = () => {
         const letter = this.props.chosenLetter;
         if (letter) {
-            this.props.addLetter([...this.props.lettersArray, letter]);
+            const arrOfLetters = !!this.props.lettersArray
+                ? [...this.props.lettersArray, letter]
+                : [letter];
+            this.props.addLetter(arrOfLetters);
         } else {
             const scoreboard = this.setScoreboard();
             this.props.setUserScore(scoreboard)
