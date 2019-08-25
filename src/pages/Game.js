@@ -174,6 +174,8 @@ export class Game extends Component {
                  * User gets kick out of the game, but game game continues.
                  * If theres only 2 players left, the second one wins.
                  */
+                this.props.setUserScore(scoreboard);
+                this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
             } else {
                 // TODO: Start new round
                 // Save scores to Firestore

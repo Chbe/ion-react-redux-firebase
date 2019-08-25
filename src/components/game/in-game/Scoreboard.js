@@ -1,12 +1,12 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { IonContent, IonItem, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonAvatar, IonLabel } from '@ionic/react';
+import { IonContent, IonItem, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonAvatar, IonLabel, IonList, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 import { firestoreConnect } from 'react-redux-firebase';
 import SkeletonScores from '../../skeletons/SkeletonScores';
 
-const Scoreboard = ({ game, history }) => {
+const Scoreboard = ({ game, userLost, history }) => {
     return (
         <>
             <IonHeader>
@@ -23,20 +23,22 @@ const Scoreboard = ({ game, history }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent>
-                {game
-                    ? [...game[0].scoreboard]
-                        .sort((a, b) => a.score < b.score)
-                        .map(scoreObj => {
-                            return <IonItem key={scoreObj.uid}>
-                                <IonAvatar slot="start">
-                                    <img src={scoreObj.photoURL} />
-                                </IonAvatar>
-                                <IonLabel>
-                                    <h2>{scoreObj.displayName} | {scoreObj.score} </h2>
-                                </IonLabel>
-                            </IonItem>
-                        })
-                    : <SkeletonScores />}
+                <IonList>
+                    {game
+                        ? [...game[0].scoreboard]
+                            .sort((a, b) => a.score < b.score)
+                            .map(scoreObj => {
+                                return <IonItem key={scoreObj.uid}>
+                                    <IonAvatar slot="start">
+                                        <img src={scoreObj.photoURL} />
+                                    </IonAvatar>
+                                    <IonLabel>
+                                        <h2>{scoreObj.displayName} | {scoreObj.score} </h2>
+                                    </IonLabel>
+                                </IonItem>
+                            })
+                        : <SkeletonScores />}
+                </IonList>
             </IonContent>
         </>
     )
@@ -46,7 +48,7 @@ const mapStateToProps = ({ firestore }) => ({
     game: firestore.ordered.game
 });
 
-const mapDispatchToProps = { };
+const mapDispatchToProps = {};
 
 export default compose(
     firestoreConnect((props) => [
