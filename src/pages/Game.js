@@ -176,9 +176,8 @@ export class Game extends Component {
                  */
             } else {
                 // TODO: Start new round
-                // Svae to Firestore
-                // this.props.setUserScore(scoreboard);
-
+                // Save scores to Firestore
+                this.props.setUserScore(scoreboard);
                 this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
             }
         }

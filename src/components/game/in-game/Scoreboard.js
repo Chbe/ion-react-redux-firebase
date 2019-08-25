@@ -1,18 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { IonContent, IonItem, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonAvatar, IonLabel } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
-import { inGameCleanUp } from '../../../store/actions';
 import { firestoreConnect } from 'react-redux-firebase';
 import SkeletonScores from '../../skeletons/SkeletonScores';
 
-const Scoreboard = ({ game, cleanUp, history }) => {
-    useEffect(() => {
-        return () => {
-            cleanUp();
-        };
-    }, [])
+const Scoreboard = ({ game, history }) => {
     return (
         <>
             <IonHeader>
@@ -52,9 +46,7 @@ const mapStateToProps = ({ firestore }) => ({
     game: firestore.ordered.game
 });
 
-const mapDispatchToProps = {
-    cleanUp: inGameCleanUp
-};
+const mapDispatchToProps = { };
 
 export default compose(
     firestoreConnect((props) => [
