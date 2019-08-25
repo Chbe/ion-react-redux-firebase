@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { IonContent, IonItem, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonAvatar, IonLabel } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 import { inGameCleanUp } from '../../../store/actions';
+import { firestoreConnect } from 'react-redux-firebase';
+import SkeletonScores from '../../skeletons/SkeletonScores';
 
-const Scoreboard = ({ scoreboard, cleanUp, history }) => {
+const Scoreboard = ({ game, cleanUp, history }) => {
     useEffect(() => {
-        console.log('Scoreboard enter');
         return () => {
-            console.log('Scoreboard leave');
             cleanUp();
         };
     }, [])
@@ -28,31 +29,42 @@ const Scoreboard = ({ scoreboard, cleanUp, history }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent>
-                {scoreboard && scoreboard
-                    .map(scoreObj => {
-                        return <IonItem key={scoreObj.uid}>
-                            <IonAvatar slot="start">
-                                <img src={scoreObj.photoURL} />
-                            </IonAvatar>
-                            <IonLabel>
-                                <h2>{scoreObj.displayName} | {scoreObj.score} </h2>
-                            </IonLabel>
-                        </IonItem>
-                    })}
+                {game
+                    ? [...game[0].scoreboard]
+                        .sort((a, b) => a.score < b.score)
+                        .map(scoreObj => {
+                            return <IonItem key={scoreObj.uid}>
+                                <IonAvatar slot="start">
+                                    <img src={scoreObj.photoURL} />
+                                </IonAvatar>
+                                <IonLabel>
+                                    <h2>{scoreObj.displayName} | {scoreObj.score} </h2>
+                                </IonLabel>
+                            </IonItem>
+                        })
+                    : <SkeletonScores />}
             </IonContent>
         </>
     )
 }
 
-const mapStateToProps = ({ gameReducer }) => ({
-    scoreboard: gameReducer.scoreboard,
+const mapStateToProps = ({ firestore }) => ({
+    game: firestore.ordered.game
 });
 
 const mapDispatchToProps = {
     cleanUp: inGameCleanUp
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Scoreboard)
+export default compose(
+    firestoreConnect((props) => [
+        {
+            collection: `games`,
+            doc: props.match.params.gameId,
+            storeAs: 'game'
+        }
+    ]),
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    ))(Scoreboard)

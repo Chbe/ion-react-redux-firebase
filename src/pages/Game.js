@@ -10,7 +10,7 @@ import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
-import { setEnablePlay, setLettersArray, inGameCleanUp, setScoreboard } from '../store/actions';
+import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
 import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 import { withFirestore } from 'react-redux-firebase';
@@ -51,7 +51,6 @@ export class Game extends Component {
     }
 
     UNSAFE_componentWillMount() {
-        this.props.cleanUp();
         this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
             this.props.history.push('/');
@@ -177,19 +176,18 @@ export class Game extends Component {
                  */
             } else {
                 // TODO: Start new round
-
-                // Save to temp Redux state
-                this.props.setScoreboard(scoreboard);
                 // Svae to Firestore
-                this.props.setUserScore(scoreboard);
+                // this.props.setUserScore(scoreboard);
 
-                this.props.history.push(`/scoreboard`);
+                this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
             }
         }
         this.cleanUp();
     }
 
     cleanUp = () => {
+        this.props.cleanUp();
+
         if (this.startInterval)
             clearInterval(this.startInterval);
         if (this.bufferInterval)
@@ -268,7 +266,6 @@ const mapStateToProps = ({ firestore, firebase, gameReducer }) => ({
 const mapDispatchToProps = {
     setEnablePlay: setEnablePlay,
     setLettersArray: setLettersArray,
-    setScoreboard, setScoreboard,
     cleanUp: inGameCleanUp
 };
 

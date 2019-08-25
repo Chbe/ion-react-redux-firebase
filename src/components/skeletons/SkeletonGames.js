@@ -19,12 +19,12 @@ const SkeletonGames = () => {
                             <IonSkeletonText animated style={{ width: '10%' }} />
                         </IonCardSubtitle>
                         <IonCardTitle style={{ textAlign: 'center' }}>
-                            <IonSkeletonText animated style={{ width: '20%%' }} />
+                            <IonSkeletonText animated style={{ width: '20%' }} />
                         </IonCardTitle>
                     </IonCardHeader>
 
                     <IonCardContent>
-                        <IonSkeletonText animated style={{ width: '40%%' }} />
+                        <IonSkeletonText animated style={{ width: '40%' }} />
                     </IonCardContent>
                 </IonCard>
             })}
