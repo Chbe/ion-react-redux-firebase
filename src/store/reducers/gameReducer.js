@@ -2,13 +2,15 @@ import {
     IN_GAME_CLEANUP,
     IN_GAME_SET_LETTER,
     IN_GAME_SET_LOADING,
-    IN_GAME_SET_LETTERS_ARRAY
+    IN_GAME_SET_LETTERS_ARRAY,
+    IN_GAME_SET_SCOREBOARD
 } from '../actionTypes';
 
 const initialState = {
     letter: '',
     enablePlay: false,
-    lettersArray: []
+    lettersArray: [],
+    scoreboard: []
 }
 
 const cleanUp = state => {
@@ -27,6 +29,10 @@ const setLettersArray = (state, payload) => {
     return { ...state, lettersArray: payload };
 };
 
+const setScoreboard = (state, payload) => {
+    return { ...state, scoreboard: payload };
+};
+
 export default (state = initialState, { type, payload }) => {
     switch (type) {
         case IN_GAME_CLEANUP:
@@ -40,6 +46,9 @@ export default (state = initialState, { type, payload }) => {
 
         case IN_GAME_SET_LETTERS_ARRAY:
             return setLettersArray(state, payload);
+
+        case IN_GAME_SET_SCOREBOARD:
+            return setScoreboard(state, payload);
 
         default:
             return state;

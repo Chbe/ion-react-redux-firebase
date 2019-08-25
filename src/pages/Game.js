@@ -10,7 +10,7 @@ import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
-import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
+import { setEnablePlay, setLettersArray, inGameCleanUp, setScoreboard } from '../store/actions';
 import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 import { withFirestore } from 'react-redux-firebase';
@@ -51,7 +51,7 @@ export class Game extends Component {
     }
 
     UNSAFE_componentWillMount() {
-        this.props.setEnablePlay(false);
+        this.props.cleanUp();
         this._isMounted = true;
         if (!this.props.games || !this.props.match.params.gameId) {
             this.props.history.push('/');
@@ -132,24 +132,31 @@ export class Game extends Component {
         }, (25000 / 1000));
     }
 
+    checkIfUserLost = (score) => {
+        return score === 5 ? true : false;
+    }
+
     setScoreboard = () => {
         const displayName = this.props.displayName;
         const uid = this.props.uid;
+        const photoURL = this.props.photoURL
         let scoreboard = this.state.game.scoreboard;
+        let userScore;
         scoreboard = !!scoreboard.length
             ? scoreboard.map(obj => {
                 if (obj.uid === uid) {
-                    const score = obj.score + 1;
+                    userScore = obj.score + 1;
                     return {
                         ...obj,
-                        score
+                        score: userScore
                     }
                 }
                 return obj;
             })
-            : [{ uid, displayName, score: 1 }];
+            : [{ uid, displayName, photoURL, score: 1 }];
 
-        return scoreboard;
+        const userLost = this.checkIfUserLost(userScore);
+        return { scoreboard, userLost };
     }
 
     finishRound = () => {
@@ -160,14 +167,29 @@ export class Game extends Component {
                 : [letter];
             this.props.addLetter(arrOfLetters);
         } else {
-            const scoreboard = this.setScoreboard();
-            this.props.setUserScore(scoreboard)
+            const { scoreboard, userLost } = this.setScoreboard();
+
+            if (userLost) {
+                /**
+                 * TODO: Show lost page, score or whatev and start new round.
+                 * User gets kick out of the game, but game game continues.
+                 * If theres only 2 players left, the second one wins.
+                 */
+            } else {
+                // TODO: Start new round
+
+                // Save to temp Redux state
+                this.props.setScoreboard(scoreboard);
+                // Svae to Firestore
+                this.props.setUserScore(scoreboard);
+
+                this.props.history.push(`/scoreboard`);
+            }
         }
         this.cleanUp();
     }
 
     cleanUp = () => {
-        this.props.cleanUp();
         if (this.startInterval)
             clearInterval(this.startInterval);
         if (this.bufferInterval)
@@ -236,6 +258,7 @@ export class Game extends Component {
 const mapStateToProps = ({ firestore, firebase, gameReducer }) => ({
     uid: firebase.profile.uid,
     displayName: firebase.profile.displayName,
+    photoURL: firebase.profile.photoURL,
     games: firestore.ordered.games,
     chosenLetter: gameReducer.letter,
     enablePlay: gameReducer.enablePlay,
@@ -245,6 +268,7 @@ const mapStateToProps = ({ firestore, firebase, gameReducer }) => ({
 const mapDispatchToProps = {
     setEnablePlay: setEnablePlay,
     setLettersArray: setLettersArray,
+    setScoreboard, setScoreboard,
     cleanUp: inGameCleanUp
 };
 

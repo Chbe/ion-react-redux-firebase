@@ -72,7 +72,15 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         playersUid: [...uids, { uid }],
         status: "pending",
         title: gameTitle,
-        scoreboard: []
+        scoreboard: [
+          ...gameInvites.map(u => {
+            return {
+              ...u,
+              score: 0
+            }
+          }),
+          { uid, displayName, photoURL, score: 0 }
+        ]
       };
 
       firestore
@@ -168,14 +176,15 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         })}</IonList>}
 
         {/* Active or pending games */}
-        {games ?
+        {games
+          ?
           <IonList>
             {games.map(game => {
               if (game.acceptedInvites.includes(profile.uid)) {
                 // Status active or pending
                 const boxShadow = game.activePlayer.uid === profile.uid
-                ? 'var(--ion-color-success)'
-                : 'rgba(0,0,0,.12)'
+                  ? 'var(--ion-color-success)'
+                  : 'rgba(0,0,0,.12)'
                 const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
                 return <ActivePendingGame
                   boxShadow={boxShadow}
@@ -207,7 +216,8 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
                 </ActivePendingGame>
               }
             })}
-          </IonList> : <SkeletonGames />
+          </IonList>
+          : <SkeletonGames />
         }
 
       </IonContent>
