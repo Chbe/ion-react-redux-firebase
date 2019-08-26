@@ -88,6 +88,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         .add(newGame);
 
       toggleModal(false);
+
     }
   }
 
@@ -99,14 +100,14 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
 
   const answerInvite = (game, accept) => {
     if (accept) {
-      const invites = [...game.acceptedInvites, profile.uid]
-      firestore.update(`game/${game.id}`, {
-        acceptedInvites: invites
+      firestore.update(`games/${game.id}`, {
+        acceptedInvites: [...game.acceptedInvites, profile.uid]
       });
     } else {
-      console.log('Decline', game);
-      const players = [...game.players].filter(p => p.uid !== profile.uid);
-      firestore.update(`game/${game.id}`, { players })
+      firestore.update(`games/${game.id}`, {
+        players: [...game.players.filter(p => p.uid !== profile.uid)],
+        playersUid: [...game.playersUid.filter(p => p.uid !== profile.uid)]
+      });
     }
   }
 
