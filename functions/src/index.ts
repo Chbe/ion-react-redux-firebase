@@ -6,7 +6,6 @@ const settings = { timestampsInSnapshots: true };
 db.settings(settings);
 
 /** Game funcitons: */
-
 // export const letterAdded = functions.firestore
 //     .document("games/{gameId}/letters")
 //     .onUpdate(async (snap, context) => {

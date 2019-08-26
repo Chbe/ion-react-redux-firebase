@@ -65,7 +65,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   const uids = gameInvites.map(player => {
     return { uid: player.uid }
   });
-  
+
   const createGame = () => {
     if (!!gameTitle.length && !!gameInvites.length) {
       const { uid, displayName, photoURL } = profile;
@@ -107,16 +107,30 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   const answerInvite = (game, accept) => {
     if (accept) {
       // TODO: Check if game can start
+      const acceptedInvites = [...game.acceptedInvites, profile.uid];
       firestore.update(`games/${game.id}`, {
-        acceptedInvites: [...game.acceptedInvites, profile.uid]
+        acceptedInvites,
+        ...startGame(game.status, game.players, game.admin, acceptedInvites)
       });
     } else {
       // TODO: Check if game shall start or cancel
-      firestore.update(`games/${game.id}`, {
-        players: [...game.players.filter(p => p.uid !== profile.uid)],
-        playersUid: [...game.playersUid.filter(p => p.uid !== profile.uid)]
-      });
+      const playersUid = [...game.playersUid.filter(p => p.uid !== profile.uid)];
+      if (playersUid.length === 1) {
+        firestore.delete(`games/${game.id}`);
+      } else {
+        firestore.update(`games/${game.id}`, {
+          players: [...game.players.filter(p => p.uid !== profile.uid)],
+          playersUid,
+          status: startGame(game.status, game.players, playersUid)
+        });
+      }
     }
+  }
+
+  const startGame = (status, players, admin, acceptedInvites) => {
+    return acceptedInvites.length === players.length
+      ? { status: 'active', activePlayer: players.find(p => p.uid === admin) }
+      : { status }
   }
 
   // TODO: Filter different list for invites, users turn, active and pending. In that order.
