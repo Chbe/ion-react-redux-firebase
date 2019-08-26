@@ -1,11 +1,12 @@
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
+import { withHandlers } from 'recompose';
 import { IonApp, IonPage, IonRouterOutlet, IonContent } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { isLoaded, isEmpty, withFirebase } from 'react-redux-firebase';
+import { isLoaded, isEmpty, withFirebase, withFirestore } from 'react-redux-firebase';
 import { StyledFirebaseAuth } from 'react-firebaseui';
 import * as firebaseui from 'firebaseui';
 import PropTypes from 'prop-types';
@@ -41,14 +42,14 @@ const LoginWrapper = styled(FlexboxCenter)`
   height: 100vh;
 `;
 
-const App = ({ firebase, auth }) => {
+const App = ({ firebase, auth, addUserToDb, updateUserProfile }) => {
   return (
     <IonApp>
       <IonReactRouter>
         <IonPage>
           {
             !isLoaded(auth)
-              ? <Loading /> 
+              ? <Loading />
               : isEmpty(auth)
                 ? <LoginWrapper>
                   <StyledFirebaseAuth
@@ -62,10 +63,15 @@ const App = ({ firebase, auth }) => {
                         }
                       ],
                       callbacks: {
-                        signInSuccessWithAuthResult: (authResult, redirectUrl) => {
-                          firebase.handleRedirectResult(authResult).then(() => {
-                            // history.push(redirectUrl); if you use react router to redirect
-                          });
+                        signInSuccessWithAuthResult: ({ additionalUserInfo, user }) => {
+                          /** TODO: Because theres a bug.
+                           *  https://github.com/prescottprue/react-redux-firebase/issues/621 */
+                           console.log(additionalUserInfo, user)
+                          if (additionalUserInfo.isNewUser) {
+                            addUserToDb(user);
+                          } else {
+                            updateUserProfile(user);
+                          }
                           return false;
                         },
                       },
@@ -101,5 +107,39 @@ const mapStateToProps = ({ firebase, }) => ({
 
 export default compose(
   withFirebase,
+  withFirestore,
+  withHandlers({
+    addUserToDb: ({ firestore }) => (user) => {
+      return firestore.set({
+        collection: `users`,
+        doc: user.uid
+      }, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          isAnonymous: user.isAnonymous,
+          photoURL: user.photoURL,
+          searchName: user.displayName
+            ? user.displayName.toLowerCase()
+            : user.displayName,
+          friends: []
+        })
+    },
+    updateUserProfile: ({ firestore }) => (user) => {
+      return firestore.update({
+        collection: `users`,
+        doc: user.uid
+      }, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          isAnonymous: user.isAnonymous,
+          photoURL: user.photoURL,
+          searchName: user.displayName
+            ? user.displayName.toLowerCase()
+            : user.displayName
+        })
+    }
+  }),
   connect(mapStateToProps)
 )(App)

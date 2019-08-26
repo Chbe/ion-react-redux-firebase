@@ -11,8 +11,20 @@ import firebase from './firebase/Firebase';
 // react-redux-firebase config
 const rrfConfig = {
     userProfile: 'users',
-    useFirestoreForProfile: true // Firestore for Profile instead of Realtime DB
+    useFirestoreForProfile: true, // Firestore for Profile instead of Realtime DB
     // enableClaims: true // Get custom claims along with the profile
+    profileFactory: (userData, profileData) => { // how profiles are stored in database
+        const { user } = userData
+        return {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            isAnonymous: user.isAnonymous,
+            searchName: user.displayName
+                ? user.displayName.toLowerCase()
+                : user.displayName
+        }
+    }
 };
 
 // react-redux-firebase props
