@@ -68,19 +68,19 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         activePlayer: {},
         admin: uid,
         lastUpdated: Date.now(),
-        players: [...gameInvites, { uid, displayName, photoURL }],
         playersUid: [...uids, { uid }],
+        players: [
+          ...gameInvites,
+          {
+            uid,
+            displayName,
+            photoURL,
+            score: 0
+          }
+        ],
+        // playersUid: [...uids, { uid }],
         status: "pending",
-        title: gameTitle,
-        scoreboard: [
-          ...gameInvites.map(u => {
-            return {
-              ...u,
-              score: 0
-            }
-          }),
-          { uid, displayName, photoURL, score: 0 }
-        ]
+        title: gameTitle
       };
 
       firestore
@@ -95,6 +95,19 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
     setShowModal(bool);
     if (!bool)
       cleanUp();
+  }
+
+  const answerInvite = (game, accept) => {
+    if (accept) {
+      const invites = [...game.acceptedInvites, profile.uid]
+      firestore.update(`game/${game.id}`, {
+        acceptedInvites: invites
+      });
+    } else {
+      console.log('Decline', game);
+      const players = [...game.players].filter(p => p.uid !== profile.uid);
+      firestore.update(`game/${game.id}`, { players })
+    }
   }
 
   // TODO: Filter different list for invites, users turn, active and pending. In that order.
@@ -156,7 +169,10 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
                 <IonItemOption
                   expandable
                   color='danger'
-                  onClick={() => console.log('Reject Invite')}
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    answerInvite(invite, false);
+                  }}
                 >
                   <IonIcon slot="start" icon={closeCircleOutline}></IonIcon>
                   Reject
@@ -166,7 +182,10 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
                 <IonItemOption
                   expandable
                   color='success'
-                  onClick={() => console.log('Accept Invite')}
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    answerInvite(invite, true);
+                  }}
                 >
                   <IonIcon slot="end" icon={checkmarkCircleOutline}></IonIcon>
                   Accept

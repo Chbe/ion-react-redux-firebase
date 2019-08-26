@@ -126,6 +126,10 @@ export default compose(
         })
     },
     updateUserProfile: ({ firestore }) => (user) => {
+      /**
+       * TODO: Be aware not to override profile values when
+       * edit profile is developed
+       */
       return firestore.update({
         collection: `users`,
         doc: user.uid

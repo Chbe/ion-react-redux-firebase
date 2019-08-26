@@ -139,7 +139,7 @@ export class Game extends Component {
         const displayName = this.props.displayName;
         const uid = this.props.uid;
         const photoURL = this.props.photoURL
-        let scoreboard = this.state.game.scoreboard;
+        let scoreboard = this.state.game.players;
         let userScore;
         scoreboard = !!scoreboard.length
             ? scoreboard.map(obj => {
@@ -285,7 +285,7 @@ export default compose(
             return firestore.update({
                 collection: `games`,
                 doc: gameId
-            }, { scoreboard: scoreboard })
+            }, { players: scoreboard })
         }
     }),
     connect(

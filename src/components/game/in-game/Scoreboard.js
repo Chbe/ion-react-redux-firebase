@@ -6,7 +6,7 @@ import { arrowBack } from 'ionicons/icons';
 import { firestoreConnect } from 'react-redux-firebase';
 import SkeletonScores from '../../skeletons/SkeletonScores';
 
-const Scoreboard = ({ game, userLost, history }) => {
+const Scoreboard = ({ game, history }) => {
     return (
         <>
             <IonHeader>
@@ -25,7 +25,7 @@ const Scoreboard = ({ game, userLost, history }) => {
             <IonContent>
                 <IonList>
                     {game
-                        ? [...game[0].scoreboard]
+                        ? [...game[0].players]
                             .sort((a, b) => a.score < b.score)
                             .map(scoreObj => {
                                 return <IonItem key={scoreObj.uid}>
