@@ -22,7 +22,8 @@ import {
   IonItemSliding,
   IonItemOption,
   IonItemOptions,
-  IonRippleEffect
+  IonRippleEffect,
+  IonFooter
 } from '@ionic/react';
 import CreateGameModal from '../components/game/create-game/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase';
@@ -42,6 +43,11 @@ const ModalHeader = styled(FlexboxCenter)`
   font-size: 1.5rem;
 `;
 
+const NoGamesWrapper = styled(FlexboxCenter)`
+  width: 100%;
+  height: 90%;
+`;
+
 const appendZero = (value) => {
   return value < 10 ? `0${value}` : value;
 }
@@ -59,7 +65,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   const uids = gameInvites.map(player => {
     return { uid: player.uid }
   });
-
+  
   const createGame = () => {
     if (!!gameTitle.length && !!gameInvites.length) {
       const { uid, displayName, photoURL } = profile;
@@ -100,10 +106,12 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
 
   const answerInvite = (game, accept) => {
     if (accept) {
+      // TODO: Check if game can start
       firestore.update(`games/${game.id}`, {
         acceptedInvites: [...game.acceptedInvites, profile.uid]
       });
     } else {
+      // TODO: Check if game shall start or cancel
       firestore.update(`games/${game.id}`, {
         players: [...game.players.filter(p => p.uid !== profile.uid)],
         playersUid: [...game.playersUid.filter(p => p.uid !== profile.uid)]
@@ -150,7 +158,15 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
           <IonContent>
             <CreateGameModal />
           </IonContent>
-          <IonButton onClick={createGame}>CREATE GAME</IonButton>
+          <IonFooter className="ion-padding">
+            <IonToolbar>
+              <IonButton
+                expand="full"
+                size="large"
+                color="success"
+                onClick={createGame}>CREATE GAME</IonButton>
+            </IonToolbar>
+          </IonFooter>
         </IonModal>
 
         {/* Invites  */}
@@ -198,45 +214,62 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         {/* Active or pending games */}
         {games
           ?
-          <IonList>
-            {games.map(game => {
-              if (game.acceptedInvites.includes(profile.uid)) {
-                // Status active or pending
-                const boxShadow = game.activePlayer.uid === profile.uid
-                  ? 'var(--ion-color-success)'
-                  : 'rgba(0,0,0,.12)'
-                const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
-                return <ActivePendingGame
-                  boxShadow={boxShadow}
-                  key={game.id}
-                  onclick={(e) => {
-                    e.preventDefault();
-                    history.push(href);
-                  }}
-                >
-                  <IonCardHeader>
-                    <IonCardSubtitle>
-                      {game.status === 'pending' ?
-                        game.status :
-                        game.activePlayer.uid === profile.uid ?
-                          'Your turn' :
-                          game.activePlayer.displayName
-                      }
-                    </IonCardSubtitle>
-                    <IonCardTitle
-                      style={{
-                        textAlign: 'center'
-                      }}
-                    >{game.title}
-                    </IonCardTitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    {formatDate(game.lastUpdated)}
-                  </IonCardContent>
-                </ActivePendingGame>
-              }
-            })}
-          </IonList>
+          games.length
+            ?
+            <IonList>
+              {games.map(game => {
+                if (game.acceptedInvites.includes(profile.uid)) {
+                  // Status active or pending
+                  const boxShadow = game.activePlayer.uid === profile.uid
+                    ? 'var(--ion-color-success)'
+                    : 'rgba(0,0,0,.12)'
+                  const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
+                  return <ActivePendingGame
+                    boxShadow={boxShadow}
+                    key={game.id}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      history.push(href);
+                    }}
+                  >
+                    <IonCardHeader>
+                      <IonCardSubtitle>
+                        {game.status === 'pending' ?
+                          game.status :
+                          game.activePlayer.uid === profile.uid ?
+                            'Your turn' :
+                            game.activePlayer.displayName
+                        }
+                      </IonCardSubtitle>
+                      <IonCardTitle
+                        style={{
+                          textAlign: 'center'
+                        }}
+                      >{game.title}
+                      </IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      {formatDate(game.lastUpdated)}
+                    </IonCardContent>
+                  </ActivePendingGame>
+                }
+              })}
+            </IonList>
+            :
+            <NoGamesWrapper>
+              <IonButton
+                expand="block"
+                fill="outline"
+                size="large"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  toggleModal(true);
+                }}
+              >
+                <IonIcon slot="end" icon={add} />
+                <IonLabel>New Game</IonLabel>
+              </IonButton>
+            </NoGamesWrapper>
           : <SkeletonGames />
         }
 
