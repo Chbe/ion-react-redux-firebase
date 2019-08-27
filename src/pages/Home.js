@@ -81,7 +81,8 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
             uid,
             displayName,
             photoURL,
-            score: 0
+            score: 0,
+            isActive: true
           }
         ],
         // playersUid: [...uids, { uid }],
@@ -121,7 +122,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         firestore.update(`games/${game.id}`, {
           players: [...game.players.filter(p => p.uid !== profile.uid)],
           playersUid,
-          status: startGame(game.status, game.players, playersUid)
+          ...startGame(game.status, game.players, game.admin, playersUid)
         });
       }
     }
@@ -184,54 +185,56 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         </IonModal>
 
         {/* Invites  */}
-        {games && <IonList> {games.map(invite => {
-          if (!invite.acceptedInvites.includes(profile.uid))
-            return <IonItemSliding key={invite.id}>
-              <IonItem detail detailIcon={arrowDropleft}>
-                <IonIcon slot="start" icon={mail}></IonIcon>
-                <IonLabel>
-                  <h2>New Invite</h2>
-                  <p>from {invite.players.find(player =>
-                    player.uid === invite.admin)
-                    .displayName}</p>
-                </IonLabel>
-              </IonItem>
-              <IonItemOptions side='start'>
-                <IonItemOption
-                  expandable
-                  color='danger'
-                  onClick={(ev) => {
-                    ev.preventDefault();
-                    answerInvite(invite, false);
-                  }}
-                >
-                  <IonIcon slot="start" icon={closeCircleOutline}></IonIcon>
-                  Reject
+        <IonList>
+          {games && games
+            .map(invite => {
+              if (!invite.acceptedInvites.includes(profile.uid))
+                return <IonItemSliding key={invite.id}>
+                  <IonItem detail detailIcon={arrowDropleft}>
+                    <IonIcon slot="start" icon={mail}></IonIcon>
+                    <IonLabel>
+                      <h2>New Invite</h2>
+                      <p>from {invite.players.find(player =>
+                        player.uid === invite.admin)
+                        .displayName}</p>
+                    </IonLabel>
+                  </IonItem>
+                  <IonItemOptions side='start'>
+                    <IonItemOption
+                      expandable
+                      color='danger'
+                      onClick={(ev) => {
+                        ev.preventDefault();
+                        answerInvite(invite, false);
+                      }}
+                    >
+                      <IonIcon slot="start" icon={closeCircleOutline}></IonIcon>
+                      Reject
                   </IonItemOption>
-              </IonItemOptions>
-              <IonItemOptions side='end'>
-                <IonItemOption
-                  expandable
-                  color='success'
-                  onClick={(ev) => {
-                    ev.preventDefault();
-                    answerInvite(invite, true);
-                  }}
-                >
-                  <IonIcon slot="end" icon={checkmarkCircleOutline}></IonIcon>
-                  Accept
+                  </IonItemOptions>
+                  <IonItemOptions side='end'>
+                    <IonItemOption
+                      expandable
+                      color='success'
+                      onClick={(ev) => {
+                        ev.preventDefault();
+                        answerInvite(invite, true);
+                      }}
+                    >
+                      <IonIcon slot="end" icon={checkmarkCircleOutline}></IonIcon>
+                      Accept
                   </IonItemOption>
-              </IonItemOptions>
-            </IonItemSliding>
-        })}</IonList>}
+                  </IonItemOptions>
+                </IonItemSliding>
+            })
+          }
+        </IonList>
 
         {/* Active or pending games */}
-        {games
-          ?
-          games.length
-            ?
-            <IonList>
-              {games.map(game => {
+        <IonList>
+          {games
+            ? games.length
+              ? games.map(game => {
                 if (game.acceptedInvites.includes(profile.uid)) {
                   // Status active or pending
                   const boxShadow = game.activePlayer.uid === profile.uid
@@ -252,7 +255,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
                           game.status :
                           game.activePlayer.uid === profile.uid ?
                             'Your turn' :
-                            game.activePlayer.displayName
+                            `${game.activePlayer.displayName}'s turn`
                         }
                       </IonCardSubtitle>
                       <IonCardTitle
@@ -267,25 +270,24 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
                     </IonCardContent>
                   </ActivePendingGame>
                 }
-              })}
-            </IonList>
-            :
-            <NoGamesWrapper>
-              <IonButton
-                expand="block"
-                fill="outline"
-                size="large"
-                onClick={(ev) => {
-                  ev.preventDefault();
-                  toggleModal(true);
-                }}
-              >
-                <IonIcon slot="end" icon={add} />
-                <IonLabel>New Game</IonLabel>
-              </IonButton>
-            </NoGamesWrapper>
-          : <SkeletonGames />
-        }
+              })
+              : <NoGamesWrapper>
+                <IonButton
+                  expand="block"
+                  fill="outline"
+                  size="large"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    toggleModal(true);
+                  }}
+                >
+                  <IonIcon slot="end" icon={add} />
+                  <IonLabel>New Game</IonLabel>
+                </IonButton>
+              </NoGamesWrapper>
+            : <SkeletonGames />
+          }
+        </IonList>
 
       </IonContent>
     </>

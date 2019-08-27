@@ -27,8 +27,8 @@ const Scoreboard = ({ game, history }) => {
                     {game
                         ? [...game[0].players]
                             .sort((a, b) => a.score < b.score)
-                            .map(scoreObj => {
-                                return <IonItem key={scoreObj.uid}>
+                            .map((scoreObj, ind) => {
+                                return <IonItem key={ind}>
                                     <IonAvatar slot="start">
                                         <img src={scoreObj.photoURL} />
                                     </IonAvatar>

@@ -37,6 +37,7 @@ import Loading from './pages/Loading';
 import styled from 'styled-components';
 import { FlexboxCenter } from './components/UI/DivUI';
 import Scoreboard from './components/game/in-game/Scoreboard';
+import TestGenerateGames from './test/TestGenerateGames';
 
 const LoginWrapper = styled(FlexboxCenter)`
   height: 100vh;
@@ -85,6 +86,8 @@ const App = ({ firebase, auth, addUserToDb, updateUserProfile }) => {
                   <Route path="/game/:gameId" component={Game} exact />
                   <Route path="/scoreboard/:gameId" component={Scoreboard} exact />
                   <Route path="/chat/:gameId" component={Chat} exact />
+                  {/* Development */}
+                  <Route path="/generategames" component={TestGenerateGames} exact />
                   <Route exact path="/" render={() => <Redirect to="/home" />} />
                 </IonRouterOutlet>
           }

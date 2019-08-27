@@ -11,7 +11,7 @@ import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIc
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
-import { rewind, glasses, eye, send } from 'ionicons/icons';
+import { rewind, glasses, eye, send, play, star } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 import { withFirestore } from 'react-redux-firebase';
 
@@ -131,58 +131,115 @@ export class Game extends Component {
         }, (25000 / 1000));
     }
 
-    checkIfUserLost = (score) => {
-        return score === 5 ? true : false;
+    setNextActivePlayer = () => {
+        // Remove score
+        const players = [...this.state.game.players]
+            .map(({ uid, displayName, photoURL, isActive }) => {
+                return {
+                    uid,
+                    displayName,
+                    photoURL,
+                    isActive
+                }
+            });
+
+        /**
+         * Defining a start index for our loop since
+         * we want to get the closest or the "next player in line"
+         */
+        const startIndex = players.indexOf(
+            players.find(p => p.uid === this.props.uid)
+        );
+
+        for (let i = 0, length = players.length; i < length; i++) {
+            const playerInd = (i + startIndex) % length;
+            const player = players[playerInd];
+            if (player.uid === this.props.uid) {
+                continue;
+            }
+            else if (player.isActive) {
+                const { uid, displayName, photoURL } = player;
+                return { uid, displayName, photoURL };
+            }
+        }
     }
 
-    setScoreboard = () => {
-        const displayName = this.props.displayName;
-        const uid = this.props.uid;
-        const photoURL = this.props.photoURL
-        let scoreboard = this.state.game.players;
-        let userScore;
-        scoreboard = !!scoreboard.length
-            ? scoreboard.map(obj => {
-                if (obj.uid === uid) {
-                    userScore = obj.score + 1;
+    setScoresAndActive = () => {
+        const players = [...this.state.game.players]
+            .map(user => {
+                if (user.uid === this.props.uid) {
+                    const score = user.score + 1;
+                    const isActive = score === 5
+                        ? false
+                        : true;
+
                     return {
-                        ...obj,
-                        score: userScore
+                        ...user,
+                        isActive,
+                        score
                     }
                 }
-                return obj;
-            })
-            : [{ uid, displayName, photoURL, score: 1 }];
+                return user;
+            });
+        return players
+    }
 
-        const userLost = this.checkIfUserLost(userScore);
-        return { scoreboard, userLost };
+    checkNumberOfActivePlayers = (players) => {
+        let activePlayers = players
+            .filter(player => player.isActive === true);
+
+        return activePlayers.length;
+    }
+
+    finishGame = (players) => {
+        const winner = players.find(p => p.isActive);
+        console.log(`
+            Winner is ${winner.displayName}!
+        `);
+        return {
+            playersUid: [...this.state.game.playersUid],
+            players: players.map(({
+                displayName,
+                photoURL,
+                score
+            }) => {
+                return {
+                    displayName,
+                    photoURL,
+                    score
+                }
+            }),
+            winner,
+            status: 'completed'
+        };
     }
 
     finishRound = () => {
+        let gameFinished = false;
+        let completedGame = {}
+        const updates = {};
         const letter = this.props.chosenLetter;
         if (letter) {
-            const arrOfLetters = !!this.props.lettersArray
+            updates['letters'] = !!this.props.lettersArray
                 ? [...this.props.lettersArray, letter]
                 : [letter];
-            this.props.addLetter(arrOfLetters);
         } else {
-            const { scoreboard, userLost } = this.setScoreboard();
-
-            if (userLost) {
-                /**
-                 * TODO: Show lost page, score or whatev and start new round.
-                 * User gets kick out of the game, but game game continues.
-                 * If theres only 2 players left, the second one wins.
-                 */
-                this.props.setUserScore(scoreboard);
-                this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+            const players = this.setScoresAndActive();
+            const activeNumber = this.checkNumberOfActivePlayers(players);
+            if (activeNumber === 1) {
+                completedGame = this.finishGame(players);
             } else {
-                // TODO: Start new round
-                // Save scores to Firestore
-                this.props.setUserScore(scoreboard);
-                this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+                updates['activePlayer'] = this.setNextActivePlayer();
+                updates['players'] = players;
             }
         }
+
+        if (gameFinished) {
+            this.props.batchUpdate(updates);
+        } else {
+            this.props.batchSet(completedGame);
+        }
+        this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
         this.cleanUp();
     }
 
@@ -232,6 +289,7 @@ export class Game extends Component {
                         <LetterBox />
                         <div>
                             <ActionsWrapper>
+                                {/* Send letter */}
                                 <Button
                                     onClick={this.finishRound}
                                     disabled={!this.props.enablePlay}
@@ -273,19 +331,19 @@ const mapDispatchToProps = {
 export default compose(
     withFirestore,
     withHandlers({
-        addLetter: ({ firestore, match }) => (lettersArr) => {
+        batchUpdate: ({ firestore, match }) => (fieldsToUpdate) => {
             const gameId = match.params.gameId;
             return firestore.update({
                 collection: `games`,
                 doc: gameId
-            }, { letters: lettersArr })
+            }, { ...fieldsToUpdate, lastUpdated: Date.now() })
         },
-        setUserScore: ({ firestore, match }) => (scoreboard) => {
+        batchSet: ({ firestore, match }) => (data) => {
             const gameId = match.params.gameId;
-            return firestore.update({
+            return firestore.set({
                 collection: `games`,
                 doc: gameId
-            }, { players: scoreboard })
+            }, data)
         }
     }),
     connect(
