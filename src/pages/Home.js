@@ -23,7 +23,8 @@ import {
   IonItemOption,
   IonItemOptions,
   IonRippleEffect,
-  IonFooter
+  IonFooter,
+  IonListHeader
 } from '@ionic/react';
 import CreateGameModal from '../components/game/create-game/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase';
@@ -31,11 +32,7 @@ import styled from 'styled-components';
 import SkeletonGames from '../components/skeletons/SkeletonGames';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { createGameCleanUp } from '../store/actions';
-
-// TODO: hehe some design focus maybe?
-const ActivePendingGame = styled(IonCard)`
-  // box-shadow: 0 4px 16px ${({ boxShadow }) => (boxShadow)};
-`;
+import GameCard from '../components/game/GameCard';
 
 const ModalHeader = styled(FlexboxCenter)`
   width: 35px;
@@ -47,17 +44,6 @@ const NoGamesWrapper = styled(FlexboxCenter)`
   width: 100%;
   height: 90%;
 `;
-
-const appendZero = (value) => {
-  return value < 10 ? `0${value}` : value;
-}
-
-const formatDate = (date) => {
-  const current_datetime = new Date(date);
-  const formatted_date =
-    `${current_datetime.getFullYear()}-${appendZero((current_datetime.getMonth() + 1))}-${appendZero(current_datetime.getDate())} ${current_datetime.getHours()}:${current_datetime.getMinutes()}`
-  return formatted_date;
-}
 
 const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   const firestore = useFirestore();
@@ -235,40 +221,12 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
           {games
             ? games.length
               ? games.map(game => {
-                if (game.acceptedInvites.includes(profile.uid)) {
-                  // Status active or pending
-                  const boxShadow = game.activePlayer.uid === profile.uid
-                    ? 'var(--ion-color-success)'
-                    : 'rgba(0,0,0,.12)'
-                  const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
-                  return <ActivePendingGame
-                    boxShadow={boxShadow}
+                if (game.acceptedInvites.includes(profile.uid)) {    
+                  return <GameCard
                     key={game.id}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      history.push(href);
-                    }}
-                  >
-                    <IonCardHeader>
-                      <IonCardSubtitle>
-                        {game.status === 'pending' ?
-                          game.status :
-                          game.activePlayer.uid === profile.uid ?
-                            'Your turn' :
-                            `${game.activePlayer.displayName}'s turn`
-                        }
-                      </IonCardSubtitle>
-                      <IonCardTitle
-                        style={{
-                          textAlign: 'center'
-                        }}
-                      >{game.title}
-                      </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                      {formatDate(game.lastUpdated)}
-                    </IonCardContent>
-                  </ActivePendingGame>
+                    game={game}
+                    history={history}
+                  />
                 }
               })
               : <NoGamesWrapper>
