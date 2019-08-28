@@ -30,17 +30,18 @@ const Profile = ({ profile, firebase }) => {
                         <IonBackButton defaultHref="home" />
                     </IonButtons>
                     <IonButtons slot="end">
-                        <IonButton onClick={(ev) => {
-                            ev.preventDefault();
-                            firebase.logout();
-                        }}>
+                        <IonButton
+                            onClick={(ev) => {
+                                ev.preventDefault();
+                                firebase.logout();
+                            }}>
                             <IonIcon slot="icon-only" icon={logOut}></IonIcon>
                         </IonButton>
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                <IonCard>
+                <IonCard style={{ '--background': 'var(--ion-color-primary)' }}>
                     <IonItem>
                         <IonAvatar>
                             {profile.photoURL ?

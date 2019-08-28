@@ -13,22 +13,29 @@ const formatDate = (date) => {
     return formatted_date;
 }
 
+const setBg = (status, activePlayer, uid) => {
+    if (status === 'pending') {
+        return '--ion-color-light';
+    } else if (activePlayer === uid) {
+        return '--ion-color-success';
+    } else {
+        return '--ion-color-primary';
+    }
+}
+
 // TODO: hehe some design focus maybe?
 const ActivePendingGame = styled(IonCard)`
-  // box-shadow: 0 4px 16px ${({ boxShadow }) => (boxShadow)};
+  --background: var(${({ bg }) => (bg)});
 `;
 
 const GameCard = ({ game, uid, history }) => {
-    const boxShadow = game.activePlayer.uid === uid
-        ? 'var(--ion-color-success)'
-        : 'rgba(0,0,0,.12)';
     const href = (game.status === 'active'
         && game.activePlayer.uid === uid)
         ? `/game/${game.id}`
         : `/chat/${game.id}`;
     return (
         <ActivePendingGame
-            boxShadow={boxShadow}
+            bg={setBg(game.status, game.activePlayer.uid, uid)}
             onClick={(e) => {
                 e.preventDefault();
                 history.push(href);
@@ -41,18 +48,18 @@ const GameCard = ({ game, uid, history }) => {
                             'Your turn' :
                             `${game.activePlayer.displayName}'s turn`
                     }
-                </IonCardSubtitle>
+                </IonCardSubtitle >
                 <IonCardTitle
                     style={{
                         textAlign: 'center'
                     }}
                 >{game.title}
                 </IonCardTitle>
-            </IonCardHeader>
+            </IonCardHeader >
             <IonCardContent>
                 {formatDate(game.lastUpdated)}
             </IonCardContent>
-        </ActivePendingGame>
+        </ActivePendingGame >
     )
 }
 

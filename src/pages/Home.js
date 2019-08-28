@@ -44,7 +44,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
     return { uid: player.uid }
   });
 
-  const determineRender = () => {
+  const determineVisuals = () => {
     if (!games) {
       return <SkeletonGames />
     } else {
@@ -203,7 +203,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
             </IonToolbar>
           </IonFooter>
         </IonModal>
-        {determineRender()}
+        {determineVisuals()}
       </IonContent>
     </>
   )

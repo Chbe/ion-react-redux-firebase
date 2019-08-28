@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { setLetter } from '../../../store/actions';
 
 const KeyDiv = styled.div`
-    color: white;
+    color: var(--ion-color-dark-tint);
     margin: 1px;
     float: left;
     border-radius: 5px;

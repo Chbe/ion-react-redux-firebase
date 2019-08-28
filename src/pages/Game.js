@@ -7,7 +7,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import LetterBox from '../components/game/drag-n-drop/LetterBox';
 import Keyboard from '../components/game/drag-n-drop/Keyboard';
-import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton } from '@ionic/react';
+import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton, IonContent } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
@@ -281,35 +281,38 @@ export class Game extends Component {
                     </IonToolbar>
                 </IonHeader>
                 {/* TODO: If platform, touch or HTML5 */}
-                <DndProvider backend={this._dndBackend}>
-                    <Wrapper>
-                        <IonProgressBar
-                            color={this.state.progressbarColor}
-                            value={this.state.progressbarValue}
-                            buffer={this.state.buffer}
-                            reversed={this.state.buffer < 1 ? true : false}
-                        ></IonProgressBar>
-                        <LetterBox />
-                        <div>
-                            <ActionsWrapper>
-                                {/* Send letter */}
-                                <Button
-                                    onClick={this.finishRound}
-                                    disabled={!this.props.enablePlay}
-                                    fill="outline">
-                                    <IonIcon slot="icon-only" icon={send}></IonIcon>
-                                </Button>
-                                <Button disabled={!this.props.enablePlay} fill="outline">
-                                    <IonIcon slot="icon-only" icon={glasses}></IonIcon>
-                                </Button>
-                                <Button disabled={!this.props.enablePlay} fill="outline">
-                                    <IonIcon slot="icon-only" icon={eye}></IonIcon>
-                                </Button>
-                            </ActionsWrapper>
-                            <Keyboard />
-                        </div>
-                    </Wrapper>
-                </DndProvider>
+                <IonContent>
+                    <DndProvider backend={this._dndBackend}>
+                        <Wrapper>
+                            <IonProgressBar
+                                color={this.state.progressbarColor}
+                                value={this.state.progressbarValue}
+                                buffer={this.state.buffer}
+                                reversed={this.state.buffer < 1 ? true : false}
+                            ></IonProgressBar>
+                            <LetterBox />
+                            <div>
+                                <ActionsWrapper>
+                                    {/* Send letter */}
+                                    <Button
+                                        onClick={this.finishRound}
+                                        disabled={!this.props.enablePlay}
+                                        size="large"
+                                        fill="outline">
+                                        <IonIcon slot="icon-only" icon={send}></IonIcon>
+                                    </Button>
+                                    <Button size="large" disabled={!this.props.enablePlay} fill="outline">
+                                        <IonIcon slot="icon-only" icon={glasses}></IonIcon>
+                                    </Button>
+                                    <Button size="large" disabled={!this.props.enablePlay} fill="outline">
+                                        <IonIcon slot="icon-only" icon={eye}></IonIcon>
+                                    </Button>
+                                </ActionsWrapper>
+                                <Keyboard />
+                            </div>
+                        </Wrapper>
+                    </DndProvider>
+                </IonContent>
             </>
         )
     }
