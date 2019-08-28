@@ -24,6 +24,7 @@ import { FlexboxCenter } from '../components/UI/DivUI';
 import { createGameCleanUp } from '../store/actions';
 import GameCard from '../components/game/GameCard';
 import GameInvite from '../components/game/GameInvite';
+import FinishedGameCard from '../components/game/FinishedGameCard';
 
 const ModalHeader = styled(FlexboxCenter)`
   width: 35px;
@@ -42,6 +43,77 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   const uids = gameInvites.map(player => {
     return { uid: player.uid }
   });
+
+  const determineRender = () => {
+    if (!games) {
+      return <SkeletonGames />
+    } else {
+      if (!games.length) {
+        return renderNoGames();
+      } else {
+        return <>
+          <IonList>{renderInvites()}</IonList>
+          <IonList>{renderActiveAndPendingGames()}</IonList>
+          <IonList>{renderFinishedGames()}</IonList>
+        </>
+      }
+    }
+  }
+
+  const renderInvites = () => {
+    return games
+      .filter(game => game.status !== 'completed' && !game.acceptedInvites.includes(profile.uid))
+      .map(game => {
+        return <GameInvite
+          key={game.id}
+          invite={game}
+          uid={profile.uid}
+          firestore={firestore}
+        />
+      })
+  }
+
+  const renderActiveAndPendingGames = () => {
+    return games
+      .filter(game => game.status !== 'completed' && game.acceptedInvites.includes(profile.uid))
+      .map(game => {
+        return <GameCard
+          key={game.id}
+          game={game}
+          history={history}
+          uid={profile.uid}
+        />
+      })
+  }
+
+  const renderFinishedGames = () => {
+    return games
+      .filter(game => game.status === 'completed')
+      .map(game => {
+        return <FinishedGameCard
+          key={game.id}
+          game={game}
+          history={history}
+        />
+      })
+  }
+
+  const renderNoGames = () => {
+    return <NoGamesWrapper>
+      <IonButton
+        expand="block"
+        fill="outline"
+        size="large"
+        onClick={(ev) => {
+          ev.preventDefault();
+          toggleModal(true);
+        }}
+      >
+        <IonIcon slot="end" icon={add} />
+        <IonLabel>New Game</IonLabel>
+      </IonButton>
+    </NoGamesWrapper>
+  }
 
   const createGame = () => {
     if (!!gameTitle.length && !!gameInvites.length) {
@@ -131,54 +203,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
             </IonToolbar>
           </IonFooter>
         </IonModal>
-
-        {/* Invites  */}
-        <IonList>
-          {games && games
-            .map(invite => {
-              if (!invite.acceptedInvites.includes(profile.uid))
-                return <GameInvite
-                  key={invite.id}
-                  invite={invite}
-                  uid={profile.uid}
-                  firestore={firestore}
-                />
-            })
-          }
-        </IonList>
-
-        {/* Active or pending games */}
-        <IonList>
-          {games
-            ? games.length
-              ? games.map(game => {
-                if (game.acceptedInvites.includes(profile.uid)) {
-                  return <GameCard
-                    key={game.id}
-                    game={game}
-                    history={history}
-                    uid={profile.uid}
-                  />
-                }
-              })
-              : <NoGamesWrapper>
-                <IonButton
-                  expand="block"
-                  fill="outline"
-                  size="large"
-                  onClick={(ev) => {
-                    ev.preventDefault();
-                    toggleModal(true);
-                  }}
-                >
-                  <IonIcon slot="end" icon={add} />
-                  <IonLabel>New Game</IonLabel>
-                </IonButton>
-              </NoGamesWrapper>
-            : <SkeletonGames />
-          }
-        </IonList>
-
+        {determineRender()}
       </IonContent>
     </>
   )

@@ -32,7 +32,7 @@ const GameInvite = ({ invite, uid, firestore }) => {
             ? { status: 'active', activePlayer: players.find(p => p.uid === admin) }
             : { status }
     }
-
+    
     return (
         <IonItemSliding>
             <IonItem detail detailIcon={arrowDropleft}>

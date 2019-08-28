@@ -192,25 +192,26 @@ export class Game extends Component {
     }
 
     finishGame = (players) => {
-        const winner = players.find(p => p.isActive);
-        console.log(`
-            Winner is ${winner.displayName}!
-        `);
+        const winner = players.find(p => p.isActive).uid;
         return {
             playersUid: [...this.state.game.playersUid],
             players: players.map(({
+                uid,
                 displayName,
                 photoURL,
                 score
             }) => {
                 return {
+                    uid,
                     displayName,
                     photoURL,
                     score
                 }
             }),
             winner,
-            status: 'completed'
+            status: 'completed',
+            lastUpdated: this.state.game.lastUpdated,
+            title: this.state.game.title
         };
     }
 

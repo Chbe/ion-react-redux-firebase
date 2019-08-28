@@ -4,6 +4,34 @@ import { IonContent, IonButton } from '@ionic/react';
 
 const Games = [
     {
+        "lastUpdated": 1566838357256,
+        "players": [
+            {
+                "displayName": "Donald Trump",
+                "photoURL": "https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg",
+                "score": 0,
+                "uid": "qqVFZHHv1pV99K3sHxXB5mnBP2t1"
+            },
+            {
+                "displayName": "Christopher Bengtsson",
+                "photoURL": "https://lh4.googleusercontent.com/-OSL5arcBFkA/AAAAAAAAAAI/AAAAAAAAFqY/8VJ08SUVZPI/photo.jpg",
+                "score": 0,
+                "uid": "52oabfOhMEaB7GoxwmGEvwWV7LI2",
+            }
+        ],
+        "playersUid": [
+            {
+                "uid": "qqVFZHHv1pV99K3sHxXB5mnBP2t1"
+            },
+            {
+                "uid": "52oabfOhMEaB7GoxwmGEvwWV7LI2"
+            }
+        ],
+        "status": "completed",
+        "title": "Waterloo",
+        "winner": "qqVFZHHv1pV99K3sHxXB5mnBP2t1"
+    },
+    {
         "acceptedInvites": [
             "qqVFZHHv1pV99K3sHxXB5mnBP2t1"
         ],
