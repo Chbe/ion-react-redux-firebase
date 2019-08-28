@@ -263,7 +263,7 @@ export class Game extends Component {
         return (
             <>
                 <IonHeader>
-                    <IonToolbar>
+                    <IonToolbar color="medium">
                         <IonButtons slot="start">
                             <IonBackButton defaultHref="/" />
                         </IonButtons>

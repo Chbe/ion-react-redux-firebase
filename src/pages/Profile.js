@@ -25,7 +25,7 @@ const Profile = ({ profile, firebase }) => {
     return (
         <>
             <IonHeader>
-                <IonToolbar>
+                <IonToolbar color="medium">
                     <IonButtons slot="start">
                         <IonBackButton defaultHref="home" />
                     </IonButtons>
