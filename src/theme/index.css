@@ -7,7 +7,8 @@ ion-progress-bar {
 }
 
 ion-content {
-    --background: #32343e;
+    --background: var(--ion-color-medium);
+    --color: var(--ion-color-medium-contrast);
 }
 
 /* ion-card, ion-card-title, ion-card-subtitle, ion-card-content {

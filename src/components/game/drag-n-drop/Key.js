@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { setLetter } from '../../../store/actions';
 
 const KeyDiv = styled.div`
-    color: var(--ion-color-light-tint);
+    color: var(--ion-color-primary-contrast);
     margin: 1px;
     float: left;
     border-radius: 5px;
@@ -39,7 +39,7 @@ const Key = ({ name, setLetterAction, enablePlay }) => {
     const opacity = isDragging ? 0.4 : 1;
     const background = enablePlay ?
         'var(--ion-color-primary);' :
-        'var(--ion-color-light-shade);';
+        'var(--ion-color-tertiary);';
     const cursor = enablePlay ?
         'move;' :
         'not-allowed;';
