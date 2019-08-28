@@ -15,7 +15,7 @@ const formatDate = (date) => {
 const GameCard = ({ game, history }) => {
     return (
         <IonCard
-            style={{ '--background': 'var(--ion-color-light-shade)' }}
+            // style={{ '--background': 'var(--ion-color-light-shade)' }}
             onClick={(e) => {
                 e.preventDefault();
                 history.push(`/chat/${game.id}`);

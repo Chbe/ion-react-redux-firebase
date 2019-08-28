@@ -238,11 +238,11 @@ export class Game extends Component {
         }
 
         if (gameFinished) {
-            this.props.batchSet(completedGame);
+            // this.props.batchSet(completedGame);
         } else {
-            this.props.batchUpdate(updates);
+            // this.props.batchUpdate(updates);
         }
-        this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+        // this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
         this.cleanUp();
     }
 

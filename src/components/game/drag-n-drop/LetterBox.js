@@ -56,15 +56,15 @@ const LetterBox = ({ lettersArray, enablePlay }) => {
     })
     const isActive = canDrop && isOver
     let backgroundColor = enablePlay ?
-        'var(--ion-color-success)' :
+        'var(--ion-color-primary)' :
         'var(--ion-color-light-shade)';
     let letterColor = enablePlay ?
-        'var(--ion-color-success)' :
-        'var(--ion-color-primary)';
+        'var(--ion-color-primary)' :
+        'var(--ion-color-secondary)';
     if (isActive) {
-        backgroundColor = 'var(--ion-color-success-tint)'
+        backgroundColor = 'var(--ion-color-primary-tint)'
     } else if (canDrop) {
-        backgroundColor = 'var(--ion-color-success-shade)'
+        backgroundColor = 'var(--ion-color-primary-shade)'
     }
 
     const animateLetters = (time) => {

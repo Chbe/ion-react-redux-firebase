@@ -35,10 +35,10 @@ const GameInvite = ({ invite, uid, firestore }) => {
     
     return (
         <IonItemSliding>
-            <IonItem detail detailIcon={arrowDropleft}>
-                <IonIcon slot="start" icon={mail}></IonIcon>
+            <IonItem color="light" detailIcon={arrowDropleft}>
+                <IonIcon slot="start" color="primary" icon={mail}></IonIcon>
                 <IonLabel>
-                    <h2>New Invite</h2>
+                    <h2 style={{color: 'var(--ion-color-primary)'}}>New Invite</h2>
                     <p>from {invite.players.find(player =>
                         player.uid === invite.admin)
                         .displayName}</p>

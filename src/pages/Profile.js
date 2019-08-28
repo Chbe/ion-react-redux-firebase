@@ -41,7 +41,7 @@ const Profile = ({ profile, firebase }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                <IonCard style={{ '--background': 'var(--ion-color-primary)' }}>
+                <IonCard>
                     <IonItem>
                         <IonAvatar>
                             {profile.photoURL ?

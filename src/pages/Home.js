@@ -158,7 +158,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   return (
     <>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
           <IonButtons slot="start">
             <IonButton
               onClick={(ev) => {

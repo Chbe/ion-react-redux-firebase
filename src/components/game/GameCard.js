@@ -13,20 +13,13 @@ const formatDate = (date) => {
     return formatted_date;
 }
 
-const setBg = (status, activePlayer, uid) => {
-    if (status === 'pending') {
-        return '--ion-color-light';
-    } else if (activePlayer === uid) {
-        return '--ion-color-success';
+const setBg = (activePlayer, uid) => {
+    if (activePlayer === uid) {
+        return 'dark';
     } else {
-        return '--ion-color-primary';
+        return 'tertiary';
     }
 }
-
-// TODO: hehe some design focus maybe?
-const ActivePendingGame = styled(IonCard)`
-  --background: var(${({ bg }) => (bg)});
-`;
 
 const GameCard = ({ game, uid, history }) => {
     const href = (game.status === 'active'
@@ -34,8 +27,8 @@ const GameCard = ({ game, uid, history }) => {
         ? `/game/${game.id}`
         : `/chat/${game.id}`;
     return (
-        <ActivePendingGame
-            bg={setBg(game.status, game.activePlayer.uid, uid)}
+        <IonCard
+            color={setBg(game.activePlayer.uid, uid)}
             onClick={(e) => {
                 e.preventDefault();
                 history.push(href);
@@ -59,7 +52,7 @@ const GameCard = ({ game, uid, history }) => {
             <IonCardContent>
                 {formatDate(game.lastUpdated)}
             </IonCardContent>
-        </ActivePendingGame >
+        </IonCard >
     )
 }
 
