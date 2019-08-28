@@ -24,7 +24,9 @@ const Chat = ({ history, match: { params: { gameId } } }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                Chat Page, Chat ID: {gameId}
+                Chat Page. Will be developed after game functionality is in place.
+                <br />
+                Chat ID: {gameId}
             </IonContent>
         </>
     )

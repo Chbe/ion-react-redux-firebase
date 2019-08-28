@@ -221,6 +221,7 @@ export class Game extends Component {
         const updates = {};
         const letter = this.props.chosenLetter;
         if (letter) {
+            updates['activePlayer'] = this.setNextActivePlayer();
             updates['letters'] = !!this.props.lettersArray
                 ? [...this.props.lettersArray, letter]
                 : [letter];
