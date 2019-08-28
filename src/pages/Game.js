@@ -11,7 +11,7 @@ import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIc
 import styled from 'styled-components';
 import { FlexboxCenter } from '../components/UI/DivUI';
 import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
-import { rewind, glasses, eye, send, play, star } from 'ionicons/icons';
+import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 import { withFirestore } from 'react-redux-firebase';
 
@@ -56,7 +56,7 @@ export class Game extends Component {
             this.props.history.push('/');
         } else {
             const gameId = this.props.match.params.gameId;
-            const game = this.props.games.find(game => game.id == gameId);
+            const game = this.props.games.find(game => game.id === gameId);
             this.safeStateUpdate({ game, gameId });
             this.props.setLettersArray(game.letters);
             this.prepareForGameStart(game);
@@ -228,6 +228,7 @@ export class Game extends Component {
             const activeNumber = this.checkNumberOfActivePlayers(players);
             if (activeNumber === 1) {
                 completedGame = this.finishGame(players);
+                gameFinished = true;
             } else {
                 updates['activePlayer'] = this.setNextActivePlayer();
                 updates['players'] = players;
@@ -235,9 +236,9 @@ export class Game extends Component {
         }
 
         if (gameFinished) {
-            this.props.batchUpdate(updates);
-        } else {
             this.props.batchSet(completedGame);
+        } else {
+            this.props.batchUpdate(updates);
         }
         this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
         this.cleanUp();

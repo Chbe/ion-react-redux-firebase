@@ -22,7 +22,10 @@ const GameCard = ({ game, uid, history }) => {
     const boxShadow = game.activePlayer.uid === uid
         ? 'var(--ion-color-success)'
         : 'rgba(0,0,0,.12)';
-    const href = game.status === 'active' ? `/game/${game.id}` : `/chat/${game.id}`;
+    const href = (game.status === 'active'
+        && game.activePlayer.uid === uid)
+        ? `/game/${game.id}`
+        : `/chat/${game.id}`;
     return (
         <ActivePendingGame
             boxShadow={boxShadow}

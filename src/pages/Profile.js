@@ -45,16 +45,17 @@ const Profile = ({ profile, firebase }) => {
                         <IonAvatar>
                             {profile.photoURL ?
                                 <img src={profile.photoURL}
+                                    alt={profile.displayName}
                                     style={{
                                         width: '10em'
                                     }} /> :
                                 <IonSkeletonText animated />
                             }
                         </IonAvatar>
-                        <IonLabel style={{marginLeft: '1em'}}>
-                        {profile.isAnonymous ?
-                            'Mysterious User' :
-                            profile.displayName}
+                        <IonLabel style={{ marginLeft: '1em' }}>
+                            {profile.isAnonymous ?
+                                'Mysterious User' :
+                                profile.displayName}
                         </IonLabel>
                     </IonItem>
                     <IonCardHeader>

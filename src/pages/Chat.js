@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonIcon } from '@ionic/react';
+import { IonHeader, IonToolbar, IonButtons, IonContent, IonButton, IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 
 const Chat = ({ history, match: { params: { gameId } } }) => {

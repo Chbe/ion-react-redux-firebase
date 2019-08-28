@@ -1,6 +1,5 @@
 import React from 'react';
 import Key from './Key';
-import styled from 'styled-components';
 import { FlexboxCenter } from '../../UI/DivUI';
 
 const lettersArr = [

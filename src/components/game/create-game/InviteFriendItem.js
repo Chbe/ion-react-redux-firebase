@@ -13,7 +13,7 @@ const InviteFriend = ({ friend, invited }) => {
             }}
         >
             <IonAvatar slot="start">
-                <img src={friend.photoURL} />
+                <img src={friend.photoURL} alt={friend.displayName} />
             </IonAvatar>
             <IonLabel>
                 <h2>{friend.displayName}</h2>
