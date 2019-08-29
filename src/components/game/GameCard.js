@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonCard } from '@ionic/react';
+import { IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonCard, IonAvatar, IonLabel, IonItem } from '@ionic/react';
 
 const appendZero = (value) => {
     return value < 10 ? `0${value}` : value;
@@ -34,14 +34,21 @@ const GameCard = ({ game, uid, history }) => {
                 history.push(href);
             }}>
             <IonCardHeader>
-                <IonCardSubtitle>
-                    {game.status === 'pending' ?
-                        game.status :
-                        game.activePlayer === uid ?
-                            'Your turn' :
-                            `${game.players.find(p => p.uid === game.activePlayer).displayName}'s turn`
-                    }
-                </IonCardSubtitle >
+                <IonItem color={setBg(game.activePlayer, uid)}>
+                    <IonAvatar slot="start">
+                        {/* TODO: Avatar for pending etc? */}
+                        {game.status === 'active'
+                            && <img src={game.players.find(p => p.uid === game.activePlayer).photoURL}
+                                alt={uid}
+                            />}
+                    </IonAvatar>
+                    <IonLabel>{game.status === 'pending'
+                        ? game.status
+                        : game.activePlayer === uid
+                            ? 'Your turn'
+                            : `${game.players.find(p => p.uid === game.activePlayer).displayName}'s turn`
+                    }</IonLabel>
+                </IonItem >
                 <IonCardTitle
                     style={{
                         textAlign: 'center'

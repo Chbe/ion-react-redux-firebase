@@ -10,3 +10,7 @@ ion-content {
     --background: var(--ion-color-light);
     --color: var(--ion-color-light-contrast);
 }
+
+ion-card ion-item {
+    --inner-border-width: 0px;
+}

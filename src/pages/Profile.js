@@ -20,8 +20,14 @@ import {
     IonSkeletonText,
     IonLabel
 } from '@ionic/react';
+import { withFirebase } from 'react-redux-firebase';
 
 const Profile = ({ profile, firebase }) => {
+    const avatars = ['https://firebasestorage.googleapis.com/v0/b/word-tail-22d50.appspot.com/o/avatars%2Fblack_blondie_w_beard.svg?alt=media&token=c5a4ed42-e9db-4ccd-a716-7165cc09dbeb',
+        'https://firebasestorage.googleapis.com/v0/b/word-tail-22d50.appspot.com/o/avatars%2Fblonde_w_mustasch.svg?alt=media&token=483c26fc-075d-4551-84de-1a75350461b4',
+        'https://firebasestorage.googleapis.com/v0/b/word-tail-22d50.appspot.com/o/avatars%2Fginger_w_mustasch.svg?alt=media&token=ea67d0c3-3caa-47b9-810a-025f925e2476'];
+
+    const avatar = avatars[Math.floor(Math.random() * avatars.length)];
     return (
         <>
             <IonHeader>
@@ -79,5 +85,6 @@ const mapStateToProps = ({ firebase }) => ({
 });
 
 export default compose(
+    withFirebase,
     connect((mapStateToProps))
 )(Profile)
