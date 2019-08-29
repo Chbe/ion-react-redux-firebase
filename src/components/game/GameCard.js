@@ -15,7 +15,7 @@ const formatDate = (date) => {
 
 const setBg = (activePlayer, uid) => {
     if (activePlayer === uid) {
-        return 'dark';
+        return 'medium';
     } else {
         return 'tertiary';
     }
