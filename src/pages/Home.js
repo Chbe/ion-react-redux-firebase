@@ -40,9 +40,6 @@ const NoGamesWrapper = styled(FlexboxCenter)`
 const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
   const firestore = useFirestore();
   const [showModal, setShowModal] = useState(false);
-  const uids = gameInvites.map(player => {
-    return { uid: player.uid }
-  });
 
   const determineVisuals = () => {
     if (!games) {
@@ -62,7 +59,9 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
 
   const renderInvites = () => {
     return games
-      .filter(game => game.status !== 'completed' && !game.acceptedInvites.includes(profile.uid))
+      .filter(game => game.status !== 'completed'
+        && game.players.find(p =>
+          p.uid === profile.uid && p.accepted === false))
       .map(game => {
         return <GameInvite
           key={game.id}
@@ -75,7 +74,9 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
 
   const renderActiveAndPendingGames = () => {
     return games
-      .filter(game => game.status !== 'completed' && game.acceptedInvites.includes(profile.uid))
+      .filter(game => game.status !== 'completed'
+        && game.players.find(p =>
+          p.uid === profile.uid && p.accepted === true))
       .map(game => {
         return <GameCard
           key={game.id}
@@ -119,11 +120,10 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
     if (!!gameTitle.length && !!gameInvites.length) {
       const { uid, displayName, photoURL } = profile;
       const newGame = {
-        acceptedInvites: [uid],
-        activePlayer: {},
+        activePlayer: "",
         admin: uid,
         lastUpdated: Date.now(),
-        playersUid: [...uids, { uid }],
+        playersUid: [...gameInvites.map(player => player.uid), uid],
         players: [
           ...gameInvites,
           {
@@ -131,10 +131,10 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
             displayName,
             photoURL,
             score: 0,
-            isActive: true
+            isActive: true,
+            accepted: true
           }
         ],
-        // playersUid: [...uids, { uid }],
         status: "pending",
         title: gameTitle
       };
@@ -225,10 +225,9 @@ export default compose(
   firestoreConnect(props => [{
     collection: 'games',
     where: [
-      ['playersUid', 'array-contains',
-        {
-          uid: props.firebase.auth().currentUser.uid
-        }
+      ['playersUid',
+        'array-contains',
+        props.firebase.auth().currentUser.uid
       ]
     ],
     orderBy: [

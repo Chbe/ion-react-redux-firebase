@@ -6,31 +6,40 @@ const GameInvite = ({ invite, uid, firestore }) => {
 
     const answerInvite = (game, accept) => {
         if (accept) {
-            // TODO: Check if game can start
-            const acceptedInvites = [...game.acceptedInvites, uid];
+            const players = [...game.players]
+                .map(p => {
+                    if (p.uid === uid) {
+                        return { ...p, accepted: true, isActive: true }
+                    }
+                    return p;
+                });
             firestore.update(`games/${game.id}`, {
-                acceptedInvites,
-                ...startGame(game.status, game.players, game.admin, acceptedInvites)
+                players,
+                ...startGame(game.status, game.admin, players)
             });
         } else {
-            // TODO: Check if game shall start or cancel
-            const playersUid = [...game.playersUid.filter(p => p.uid !== uid)];
-            if (playersUid.length === 1) {
+            const players = [...game.players.filter(player => player.uid !== uid)];
+            if (players.length === 1) {
                 firestore.delete(`games/${game.id}`);
             } else {
                 firestore.update(`games/${game.id}`, {
-                    players: [...game.players.filter(p => p.uid !== uid)],
-                    playersUid,
-                    ...startGame(game.status, game.players, game.admin, playersUid)
+                    players,
+                    playersUid: [...game.playersUid.filter(_uid => _uid !== uid)],
+                    ...startGame(game.status, game.admin, players)
                 });
             }
         }
     }
 
-    const startGame = (status, players, admin, acceptedInvites) => {
-        return acceptedInvites.length === players.length
-            ? { status: 'active', activePlayer: players.find(p => p.uid === admin) }
-            : { status }
+    const startGame = (status, admin, players) => {
+        const arrOfUnaccepted = players.filter(player => !player.accepted);
+        console.log(
+            `unaccepted: ${!arrOfUnaccepted}
+            `
+        );
+        return !!arrOfUnaccepted && !!arrOfUnaccepted.length
+            ? { status }
+            : { status: 'active', activePlayer: admin }
     }
 
     return (

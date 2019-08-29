@@ -23,12 +23,12 @@ const setBg = (activePlayer, uid) => {
 
 const GameCard = ({ game, uid, history }) => {
     const href = (game.status === 'active'
-        && game.activePlayer.uid === uid)
+        && game.activePlayer === uid)
         ? `/game/${game.id}`
         : `/chat/${game.id}`;
     return (
         <IonCard
-            color={setBg(game.activePlayer.uid, uid)}
+            color={setBg(game.activePlayer, uid)}
             onClick={(e) => {
                 e.preventDefault();
                 history.push(href);
@@ -37,9 +37,9 @@ const GameCard = ({ game, uid, history }) => {
                 <IonCardSubtitle>
                     {game.status === 'pending' ?
                         game.status :
-                        game.activePlayer.uid === uid ?
+                        game.activePlayer === uid ?
                             'Your turn' :
-                            `${game.activePlayer.displayName}'s turn`
+                            `${game.players.find(p => p.uid === game.activePlayer).displayName}'s turn`
                     }
                 </IonCardSubtitle >
                 <IonCardTitle

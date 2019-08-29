@@ -29,7 +29,7 @@ const CreateGameModal = ({ friends = [], title, setTitle, setInvites, searchResu
                 invited => invited.uid !== user.uid
             );
         } else {
-            invitedArr.push({ ...user, score: 0 });
+            invitedArr.push({ ...user, score: 0, isActive: false, accepted: false });
         }
 
         setInvites(invitedArr);

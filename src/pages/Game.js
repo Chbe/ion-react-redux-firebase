@@ -134,14 +134,7 @@ export class Game extends Component {
     setNextActivePlayer = () => {
         // Remove score
         const players = [...this.state.game.players]
-            .map(({ uid, displayName, photoURL, isActive }) => {
-                return {
-                    uid,
-                    displayName,
-                    photoURL,
-                    isActive
-                }
-            });
+            .map(({ uid, isActive }) => { return { uid, isActive } });
 
         /**
          * Defining a start index for our loop since
@@ -158,8 +151,7 @@ export class Game extends Component {
                 continue;
             }
             else if (player.isActive) {
-                const { uid, displayName, photoURL } = player;
-                return { uid, displayName, photoURL };
+                return player.uid;
             }
         }
     }
@@ -238,11 +230,11 @@ export class Game extends Component {
         }
 
         if (gameFinished) {
-            // this.props.batchSet(completedGame);
+            this.props.batchSet(completedGame);
         } else {
-            // this.props.batchUpdate(updates);
+            this.props.batchUpdate(updates);
         }
-        // this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+        this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
         this.cleanUp();
     }
 
