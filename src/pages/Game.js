@@ -55,21 +55,21 @@ export class Game extends Component {
         if (!this.props.games || !this.props.match.params.gameId) {
             this.props.history.push('/');
         } else {
-            const gameId = this.props.match.params.gameId;
-            const game = this.props.games.find(game => game.id === gameId);
-            this.safeStateUpdate({ game, gameId });
-            this.props.setLettersArray(game.letters);
-            this.prepareForGameStart(game);
+            this.initialize();
         }
-    }
-
-    componentDidMount() {
-
     }
 
     componentWillUnmount() {
         this._isMounted = false;
         this.cleanUp();
+    }
+
+    initialize = () => {
+        const gameId = this.props.match.params.gameId;
+        const game = this.props.games.find(game => game.id === gameId);
+        this.safeStateUpdate({ game, gameId });
+        this.props.setLettersArray(game.letters);
+        this.prepareForGameStart(game);
     }
 
     safeStateUpdate = (val) => {
@@ -265,7 +265,7 @@ export class Game extends Component {
                                     disabled={!this.props.enablePlay}
                                     size="large"
                                     shape="round"
-                                    onClick={() => console.log('show letters')}>
+                                    onClick={() => this.initialize()}>
                                     <IonIcon icon={rewind}></IonIcon>
                                 </Button>
                             </IonButtons>
