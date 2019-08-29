@@ -20,7 +20,7 @@ import CreateGameModal from '../components/game/create-game/CreateGameModal';
 import { useFirestore } from 'react-redux-firebase';
 import styled from 'styled-components';
 import SkeletonGames from '../components/skeletons/SkeletonGames';
-import { FlexboxCenter } from '../components/UI/DivUI';
+import { FlexboxCenter, MaxWidthWrapper, MaxWidthContent } from '../components/UI/DivUI';
 import { createGameCleanUp } from '../store/actions';
 import GameCard from '../components/game/GameCard';
 import GameInvite from '../components/game/GameInvite';
@@ -49,7 +49,7 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
         return renderNoGames();
       } else {
         return <>
-          <IonList>{renderInvites()}</IonList>
+          <IonList className="no-background">{renderInvites()}</IonList>
           <IonList>{renderActiveAndPendingGames()}</IonList>
           <IonList>{renderFinishedGames()}</IonList>
         </>
@@ -180,30 +180,33 @@ const Home = ({ games, profile, history, gameTitle, gameInvites, cleanUp }) => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-
-        {/* Create game modal */}
-        <IonModal
-          isOpen={showModal}
-          // TODO: onDidDismiss is causing couble action dispath
-          onDidDismiss={() => toggleModal(false)}>
-          <ModalHeader onClick={() => toggleModal(false)}>
-            <IonRippleEffect></IonRippleEffect>
-            <IonIcon slot='start' icon={close}></IonIcon>
-          </ModalHeader>
-          <IonContent>
-            <CreateGameModal />
-          </IonContent>
-          <IonFooter className="ion-padding">
-            <IonToolbar>
-              <IonButton
-                expand="full"
-                size="large"
-                color="success"
-                onClick={createGame}>CREATE GAME</IonButton>
-            </IonToolbar>
-          </IonFooter>
-        </IonModal>
-        {determineVisuals()}
+        <MaxWidthWrapper>
+          <MaxWidthContent>
+            {/* Create game modal */}
+            <IonModal
+              isOpen={showModal}
+              // TODO: onDidDismiss is causing couble action dispath
+              onDidDismiss={() => toggleModal(false)}>
+              <ModalHeader onClick={() => toggleModal(false)}>
+                <IonRippleEffect></IonRippleEffect>
+                <IonIcon slot='start' icon={close}></IonIcon>
+              </ModalHeader>
+              <IonContent>
+                <CreateGameModal />
+              </IonContent>
+              <IonFooter className="ion-padding">
+                <IonToolbar>
+                  <IonButton
+                    expand="full"
+                    size="large"
+                    color="success"
+                    onClick={createGame}>CREATE GAME</IonButton>
+                </IonToolbar>
+              </IonFooter>
+            </IonModal>
+            {determineVisuals()}
+          </MaxWidthContent>
+        </MaxWidthWrapper>
       </IonContent>
     </>
   )

@@ -18,6 +18,7 @@ import {
     IonInput
 } from '@ionic/react';
 import { withFirebase } from 'react-redux-firebase';
+import { MaxWidthContent } from '../components/UI/DivUI';
 
 const Profile = ({ profile, firebase }) => {
     const avatars = ['https://firebasestorage.googleapis.com/v0/b/word-tail-22d50.appspot.com/o/avatars%2Fblack_blondie_w_beard.svg?alt=media&token=c5a4ed42-e9db-4ccd-a716-7165cc09dbeb',
@@ -61,7 +62,7 @@ const Profile = ({ profile, firebase }) => {
     return (
         <>
             <IonHeader>
-                <IonToolbar color="medium">
+                <IonToolbar color="primary">
                     <IonButtons slot="start">
                         <IonBackButton defaultHref="home" />
                     </IonButtons>
@@ -77,51 +78,53 @@ const Profile = ({ profile, firebase }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                <IonCard color="light">
-                    <IonItem color="primary">
-                        <IonAvatar>
-                            {profile.photoURL ?
-                                <img src={profile.photoURL}
-                                    alt={profile.displayName}
-                                    style={{
-                                        width: '10em'
-                                    }} /> :
-                                <IonSkeletonText animated />
-                            }
-                        </IonAvatar>
-                        <IonLabel style={{ marginLeft: '1em' }}>
-                            {profile.isAnonymous ?
-                                'Mysterious User' :
-                                profile.displayName}
-                        </IonLabel>
-                    </IonItem>
-                    <IonItem >
-                        <IonLabel position="floating">{displayName}</IonLabel>
-                        <IonInput
-                            value={displayNameInput}
-                            onBlur={(ev) => {
-                                manageDisplayName(ev.currentTarget.value);
-                            }}
-                            onFocus={() => {
-                                if (displayName !== profile.displayName)
-                                    setDisplayNameInput(displayName)
-                            }}
-                        ></IonInput>
-                    </IonItem>
-                    <IonItem >
-                        <IonLabel position="floating">{email}</IonLabel>
-                        <IonInput
-                            value={emailInput}
-                            onBlur={(ev) => {
-                                manageEmail(ev.currentTarget.value);
-                            }}
-                            onFocus={() => {
-                                if (email !== profile.email)
-                                    setEmailInput(email)
-                            }}
-                        ></IonInput>
-                    </IonItem>
-                </IonCard>
+                <MaxWidthContent>
+                    <IonCard color="light">
+                        <IonItem color="primary">
+                            <IonAvatar>
+                                {profile.photoURL ?
+                                    <img src={profile.photoURL}
+                                        alt={profile.displayName}
+                                        style={{
+                                            width: '10em'
+                                        }} /> :
+                                    <IonSkeletonText animated />
+                                }
+                            </IonAvatar>
+                            <IonLabel style={{ marginLeft: '1em' }}>
+                                {profile.isAnonymous ?
+                                    'Mysterious User' :
+                                    profile.displayName}
+                            </IonLabel>
+                        </IonItem>
+                        <IonItem >
+                            <IonLabel position="floating">{displayName}</IonLabel>
+                            <IonInput
+                                value={displayNameInput}
+                                onBlur={(ev) => {
+                                    manageDisplayName(ev.currentTarget.value);
+                                }}
+                                onFocus={() => {
+                                    if (displayName !== profile.displayName)
+                                        setDisplayNameInput(displayName)
+                                }}
+                            ></IonInput>
+                        </IonItem>
+                        <IonItem >
+                            <IonLabel position="floating">{email}</IonLabel>
+                            <IonInput
+                                value={emailInput}
+                                onBlur={(ev) => {
+                                    manageEmail(ev.currentTarget.value);
+                                }}
+                                onFocus={() => {
+                                    if (email !== profile.email)
+                                        setEmailInput(email)
+                                }}
+                            ></IonInput>
+                        </IonItem>
+                    </IonCard>
+                </MaxWidthContent>
             </IonContent>
         </>
     )

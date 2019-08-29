@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { IonHeader, IonToolbar, IonButtons, IonContent, IonButton, IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 
+import { MaxWidthContent } from '../components/UI/DivUI';
 const Chat = ({ history, match: { params: { gameId } } }) => {
     useEffect(() => {
         console.log('Chat enter');
@@ -12,7 +13,7 @@ const Chat = ({ history, match: { params: { gameId } } }) => {
     return (
         <>
             <IonHeader>
-                <IonToolbar>
+                <IonToolbar color="primary">
                     <IonButtons slot="start">
                         <IonButton onClick={(e) => {
                             e.preventDefault();
@@ -24,9 +25,11 @@ const Chat = ({ history, match: { params: { gameId } } }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                Chat Page. Will be developed after game functionality is in place.
+                <MaxWidthContent>
+                    Chat Page. Will be developed after game functionality is in place.
                 <br />
-                Chat ID: {gameId}
+                    Chat ID: {gameId}
+                </MaxWidthContent>
             </IonContent>
         </>
     )

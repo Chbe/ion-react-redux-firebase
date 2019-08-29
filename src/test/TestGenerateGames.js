@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFirestore } from 'react-redux-firebase';
-import { IonContent, IonButton } from '@ionic/react';
+import { IonHeader, IonContent, IonToolbar, IonButtons, IonBackButton, IonButton, IonTitle, IonItem, IonCard, IonList, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonFooter } from '@ionic/react';
+
 
 const Games = [
     {
@@ -161,16 +162,47 @@ const TestGenerateGames = ({ history }) => {
         history.push('/');
     }
     return (
-        <IonContent>
-            <IonButton
-                onClick={(ev) => {
-                    ev.preventDefault();
-                    batchUpdate(Games);
-                }}
-            >
-                Insert games
-            </IonButton>
-        </IonContent>
+        <>
+            <IonHeader style={{background: 'transparent'}}>
+                <IonToolbar style={{background: 'transparent'}}>
+                    <IonButtons slot="start">
+                        <IonBackButton defaultHref="/" />
+                    </IonButtons>
+                    <IonTitle>My Navigation Bar</IonTitle>
+                </IonToolbar>
+
+                <IonToolbar>
+                    <IonTitle>Subheader</IonTitle>
+                </IonToolbar>
+            </IonHeader>
+
+            <IonContent fullscreen={false}>
+                <IonItem>
+                    <IonButton
+                        onClick={(ev) => {
+                            ev.preventDefault();
+                            batchUpdate(Games);
+                        }}>
+                        Insert games
+                    </IonButton>
+                </IonItem>
+                <IonList>
+                    {Games.map(game => {
+                        return <IonCard>
+                            <IonCardHeader>
+                                <IonCardSubtitle>{game.status} Subtitle</IonCardSubtitle>
+                                <IonCardTitle>{game.title} Title</IonCardTitle>
+                            </IonCardHeader>
+
+                            <IonCardContent>
+                                Keep close to Nature's heart... and break clear away, once in awhile,
+                                and climb a mountain or spend a week in the woods. Wash your spirit clean.
+                        </IonCardContent>
+                        </IonCard>
+                    })}
+                </IonList>
+            </IonContent>
+        </>
     )
 }
 

@@ -19,6 +19,10 @@ const KeyDiv = styled.div`
     cursor: ${({ cursor }) => (cursor)};
     opacity: ${({ opacity }) => (opacity)};
     background-color: ${({ background }) => (background)};
+
+    @media only screen and (min-width: 660px) {
+        width: 64px;
+    }
 `;
 
 const Key = ({ name, setLetterAction, enablePlay }) => {

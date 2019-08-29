@@ -9,7 +9,7 @@ import LetterBox from '../components/game/drag-n-drop/LetterBox';
 import Keyboard from '../components/game/drag-n-drop/Keyboard';
 import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton, IonContent } from '@ionic/react';
 import styled from 'styled-components';
-import { FlexboxCenter } from '../components/UI/DivUI';
+import { FlexboxCenter, MaxWidthContent } from '../components/UI/DivUI';
 import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
 import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
@@ -230,11 +230,11 @@ export class Game extends Component {
         }
 
         if (gameFinished) {
-            this.props.batchSet(completedGame);
+            // this.props.batchSet(completedGame);
         } else {
-            this.props.batchUpdate(updates);
+            // this.props.batchUpdate(updates);
         }
-        this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+        // this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
         this.cleanUp();
     }
 
@@ -255,7 +255,7 @@ export class Game extends Component {
         return (
             <>
                 <IonHeader>
-                    <IonToolbar color="medium">
+                    <IonToolbar color="primary">
                         <IonButtons slot="start">
                             <IonBackButton defaultHref="/" />
                         </IonButtons>
@@ -276,6 +276,7 @@ export class Game extends Component {
                 <IonContent>
                     <DndProvider backend={this._dndBackend}>
                         <Wrapper>
+
                             <IonProgressBar
                                 color={this.state.progressbarColor}
                                 value={this.state.progressbarValue}
@@ -283,7 +284,7 @@ export class Game extends Component {
                                 reversed={this.state.buffer < 1 ? true : false}
                             ></IonProgressBar>
                             <LetterBox />
-                            <div>
+                            <MaxWidthContent>
                                 <ActionsWrapper>
                                     {/* Send letter */}
                                     <Button
@@ -301,7 +302,7 @@ export class Game extends Component {
                                     </Button>
                                 </ActionsWrapper>
                                 <Keyboard />
-                            </div>
+                            </MaxWidthContent>
                         </Wrapper>
                     </DndProvider>
                 </IonContent>

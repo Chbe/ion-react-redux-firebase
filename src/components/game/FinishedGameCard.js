@@ -28,11 +28,7 @@ const GameCard = ({ game, history }) => {
                     {game.players.find(p => p.uid === game.winner).displayName}
                 </IonLabel>
             </IonItem >
-            <IonCardTitle
-                style={{
-                    textAlign: 'center'
-                }}
-            >{game.title}
+            <IonCardTitle className="ion-padding">{game.title}
             </IonCardTitle>
             <IonCardContent>
                 {formatDate(game.lastUpdated)}

@@ -46,12 +46,8 @@ const GameCard = ({ game, uid, history }) => {
                         ? 'Your turn'
                         : `${game.players.find(p => p.uid === game.activePlayer).displayName}'s turn`
                 }</IonLabel>
-            </IonItem >
-            <IonCardTitle
-                style={{
-                    textAlign: 'center'
-                }}
-            >{game.title}
+            </IonItem>
+            <IonCardTitle className="ion-padding">{game.title}
             </IonCardTitle>
             <IonCardContent>
                 {formatDate(game.lastUpdated)}
