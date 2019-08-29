@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
-import { IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonCard, IonAvatar, IonLabel, IonItem } from '@ionic/react';
+import { EmojiContainer } from '../UI/Emojis';
+import { IonCardTitle, IonCardContent, IonCard, IonAvatar, IonLabel, IonItem } from '@ionic/react';
 
 const appendZero = (value) => {
     return value < 10 ? `0${value}` : value;
@@ -29,33 +29,30 @@ const GameCard = ({ game, uid, history }) => {
     return (
         <IonCard
             color={setBg(game.activePlayer, uid)}
-            onClick={(e) => {
-                e.preventDefault();
-                history.push(href);
-            }}>
-            <IonCardHeader>
-                <IonItem color={setBg(game.activePlayer, uid)}>
-                    <IonAvatar slot="start">
-                        {/* TODO: Avatar for pending etc? */}
-                        {game.status === 'active'
-                            && <img src={game.players.find(p => p.uid === game.activePlayer).photoURL}
-                                alt={uid}
-                            />}
-                    </IonAvatar>
-                    <IonLabel>{game.status === 'pending'
-                        ? game.status
-                        : game.activePlayer === uid
-                            ? 'Your turn'
-                            : `${game.players.find(p => p.uid === game.activePlayer).displayName}'s turn`
-                    }</IonLabel>
-                </IonItem >
-                <IonCardTitle
-                    style={{
-                        textAlign: 'center'
-                    }}
-                >{game.title}
-                </IonCardTitle>
-            </IonCardHeader >
+            href={href}>
+            <IonItem color={setBg(game.activePlayer, uid)}>
+                <IonAvatar slot="start">
+                    {/* TODO: Avatar for pending etc? */}
+                    {game.status === 'active'
+                        ? <img src={game.players.find(p => p.uid === game.activePlayer).photoURL}
+                            alt={uid}
+                        />
+                        : <EmojiContainer>⏳</EmojiContainer>
+                    }
+                </IonAvatar>
+                <IonLabel>{game.status === 'pending'
+                    ? game.status
+                    : game.activePlayer === uid
+                        ? 'Your turn'
+                        : `${game.players.find(p => p.uid === game.activePlayer).displayName}'s turn`
+                }</IonLabel>
+            </IonItem >
+            <IonCardTitle
+                style={{
+                    textAlign: 'center'
+                }}
+            >{game.title}
+            </IonCardTitle>
             <IonCardContent>
                 {formatDate(game.lastUpdated)}
             </IonCardContent>

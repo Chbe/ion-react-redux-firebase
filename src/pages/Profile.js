@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
 import { compose } from 'redux';
 import { logOut } from 'ionicons/icons';
@@ -11,14 +11,11 @@ import {
     IonButton,
     IonIcon,
     IonCard,
-    IonCardHeader,
-    IonCardSubtitle,
-    IonCardTitle,
-    IonCardContent,
     IonAvatar,
     IonItem,
     IonSkeletonText,
-    IonLabel
+    IonLabel,
+    IonInput
 } from '@ionic/react';
 import { withFirebase } from 'react-redux-firebase';
 
@@ -26,8 +23,17 @@ const Profile = ({ profile, firebase }) => {
     const avatars = ['https://firebasestorage.googleapis.com/v0/b/word-tail-22d50.appspot.com/o/avatars%2Fblack_blondie_w_beard.svg?alt=media&token=c5a4ed42-e9db-4ccd-a716-7165cc09dbeb',
         'https://firebasestorage.googleapis.com/v0/b/word-tail-22d50.appspot.com/o/avatars%2Fblonde_w_mustasch.svg?alt=media&token=483c26fc-075d-4551-84de-1a75350461b4',
         'https://firebasestorage.googleapis.com/v0/b/word-tail-22d50.appspot.com/o/avatars%2Fginger_w_mustasch.svg?alt=media&token=ea67d0c3-3caa-47b9-810a-025f925e2476'];
-
     const avatar = avatars[Math.floor(Math.random() * avatars.length)];
+    const [displayName, setDisplayName] = useState(null);
+
+    useEffect(() => {
+        setDisplayName(profile.isAnonymous ?
+            'Mysterious User' :
+            profile.displayName);
+        return () => {
+
+        };
+    }, [profile]);
     return (
         <>
             <IonHeader>
@@ -65,15 +71,14 @@ const Profile = ({ profile, firebase }) => {
                                 profile.displayName}
                         </IonLabel>
                     </IonItem>
-                    <IonCardHeader>
-                        <IonCardSubtitle>UID: {profile.uid}</IonCardSubtitle>
-                        <IonCardTitle>{profile.isAnonymous ?
-                            'Mysterious User' :
-                            profile.displayName}</IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        {profile && profile.email}
-                    </IonCardContent>
+                    <IonItem >
+                        <IonLabel position="floating">{displayName}</IonLabel>
+                        <IonInput></IonInput>
+                    </IonItem>
+                    <IonItem >
+                        <IonLabel position="floating">{profile && profile.email}</IonLabel>
+                        <IonInput></IonInput>
+                    </IonItem>
                 </IonCard>
             </IonContent>
         </>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonCard } from '@ionic/react';
+import { EmojiContainer } from '../UI/Emojis';
+import { IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonCard, IonItem, IonAvatar, IonLabel } from '@ionic/react';
 
 const appendZero = (value) => {
     return value < 10 ? `0${value}` : value;
@@ -15,22 +16,24 @@ const formatDate = (date) => {
 const GameCard = ({ game, history }) => {
     return (
         <IonCard
-            // style={{ '--background': 'var(--ion-color-light-shade)' }}
             onClick={(e) => {
                 e.preventDefault();
                 history.push(`/chat/${game.id}`);
             }}>
-            <IonCardHeader>
-                <IonCardSubtitle>
-                    Winner - {game.players.find(p => p.uid === game.winner).displayName}
-                </IonCardSubtitle>
-                <IonCardTitle
-                    style={{
-                        textAlign: 'center'
-                    }}
-                >{game.title}
-                </IonCardTitle>
-            </IonCardHeader>
+            <IonItem color="light">
+                <IonAvatar slot="start">
+                    <EmojiContainer>🥇</EmojiContainer>
+                </IonAvatar>
+                <IonLabel>
+                    {game.players.find(p => p.uid === game.winner).displayName}
+                </IonLabel>
+            </IonItem >
+            <IonCardTitle
+                style={{
+                    textAlign: 'center'
+                }}
+            >{game.title}
+            </IonCardTitle>
             <IonCardContent>
                 {formatDate(game.lastUpdated)}
             </IonCardContent>

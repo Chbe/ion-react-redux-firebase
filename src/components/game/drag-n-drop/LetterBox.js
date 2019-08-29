@@ -14,6 +14,7 @@ const BoxWrapper = styled(FlexboxCenter)`
     border-style: solid;
     border-color: ${({ bg }) => bg};
     transition: border-color .2s ease-in;
+    box-shadow: ${({ boxShadow }) => (boxShadow ? boxShadow : '0 0 0 0')};
 `;
 
 const LetterDiv = styled.div`
@@ -54,17 +55,19 @@ const LetterBox = ({ lettersArray, enablePlay }) => {
             canDrop: monitor.canDrop(),
         }),
     })
-    const isActive = canDrop && isOver
-    let backgroundColor = enablePlay ?
-        'var(--ion-color-primary)' :
-        'var(--ion-color-light-shade)';
-    let letterColor = enablePlay ?
-        'var(--ion-color-primary)' :
-        'var(--ion-color-secondary)';
+    const isActive = canDrop && isOver;
+    let boxShadow;
+    let backgroundColor = enablePlay
+        ? 'var(--ion-color-primary)'
+        : 'var(--ion-color-tertiary)';
+    let letterColor = enablePlay
+        ? 'var(--ion-color-primary)'
+        : 'var(--ion-color-tertiary)';
     if (isActive) {
-        backgroundColor = 'var(--ion-color-primary-tint)'
+        backgroundColor = 'var(--ion-color-primary-tint)';
+        boxShadow = '0 0 11px 0px var(--ion-color-primary-shade)';
     } else if (canDrop) {
-        backgroundColor = 'var(--ion-color-primary-shade)'
+        backgroundColor = 'var(--ion-color-primary-shade)';
     }
 
     const animateLetters = (time) => {
@@ -96,10 +99,10 @@ const LetterBox = ({ lettersArray, enablePlay }) => {
             if (timer)
                 clearTimeout(timer);
         }
-    }, []);
+    }, [lettersArray]);
 
     return (
-        <BoxWrapper ref={drop} bg={backgroundColor}>
+        <BoxWrapper ref={drop} bg={backgroundColor} boxShadow={boxShadow}>
             <LetterDiv color={letterColor} className={className}>{letter}</LetterDiv>
             {/* {isActive ? 'Release to drop' : 'Drag a box here'} */}
         </BoxWrapper>
