@@ -15,6 +15,7 @@ import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 import { withFirestore } from 'react-redux-firebase';
 import { wordsApiKey } from '../config/Configs';
+import { prepareAlertForBustResult, prepareAlertForTimesUp, prepareResultAlert } from '../services/game/in-game/InGameService';
 
 const Wrapper = styled(FlexboxCenter)`
     height: 90vh;
@@ -116,8 +117,8 @@ export class Game extends Component {
             const timeLeft = this.state.timeLeft - 1;
             this.safeStateUpdate({ timeLeft })
             if (timeLeft === 0) {
-                // TODO: Prepare Result alert
-                this.finishRound();
+                const dataForResultAlert = { type: 'timesup' };
+                this.finishRound(dataForResultAlert);
             }
         }, 1000);
     }
@@ -251,40 +252,8 @@ export class Game extends Component {
             setPreviousPlayerActive = true;
         }
 
-        this.prepareAlertForBustResult(wordDefintions, prevPlayerUid);
-        this.finishRound(setPreviousPlayerActive, markUser);
-    }
-
-    prepareAlertForBustResult = (wordDefintions, prevPlayerUid) => {
-        const prevDisplayName = this.state.game.players
-            .find(player => player.uid === prevPlayerUid)
-            .displayName;
-
-        const instructions = wordDefintions.success
-            ? `${prevDisplayName} got a mark and you will start the new round`
-            : instructions = `You got a mark and ${prevDisplayName} will start the new round`;
-
-        this.setResultAlertDataState({
-            title: wordDefintions.success
-                ? `${wordDefintions.word} is a word`
-                : `${wordDefintions.word} is not a word`,
-            subHeader: wordDefintions.success
-                ? `${wordDefintions.word}: ${wordDefintions.definition}`
-                : wordDefintions.message,
-            instructions,
-            buttons: ['Got it']
-        });
-    }
-
-    setResultAlertDataState = (alertData) => {
-        this.setState({
-            resultsAlertData: {
-                header: alertData.title,
-                subHeader: alertData.subHeader,
-                message: alertData.instructions,
-                buttons: alertData.buttons
-            }
-        });
+        const dataForResultAlert = { type: 'bust', data: { wordDefintions, prevPlayerUid } };
+        this.finishRound(dataForResultAlert, setPreviousPlayerActive, markUser);
     }
 
     getWordDetails = async (word) => {
@@ -337,12 +306,10 @@ export class Game extends Component {
     }
 
     finishRound = (
+        dataForResultAlert,
         setPreviousPlayerActive = false,
-        markUser = this.props.uid
+        markUser = this.props,
     ) => {
-        /** Gets called when time is up - current user gets mark
-         *  Gets called then user clicks "Send" button
-         */
         let gameFinished = false;
         let completedGame = {}
         const updates = {};
@@ -366,14 +333,46 @@ export class Game extends Component {
                 updates['players'] = players;
             }
         }
+        this.prepareAlert(dataForResultAlert, letter, completedGame);
 
         // if (gameFinished) {
         //     this.props.batchSet(completedGame);
         // } else {
         //     this.props.batchUpdate(updates);
         // }
-        this.setShowResultsAlert(true)
         this.cleanUp();
+    }
+
+    prepareAlert = ({ type, data }, letter, completedGame) => {
+        const players = this.state.game.players;
+        let alertDataset = false;
+        let alertData = {};
+        if (type === 'bust') {
+            alertData = prepareAlertForBustResult(players, data, completedGame)
+            this.setResultAlertDataState(alertData);
+            alertDataset = true;
+        } else if (!letter && type === 'timesup') {
+            alertData = prepareAlertForTimesUp(players, completedGame);
+            alertDataset = true;
+        } else if (!letter && type === 'sendBtn') {
+            alertData = prepareResultAlert(players, completedGame);
+            alertDataset = true;
+        }
+        if (alertDataset) {
+            this.setResultAlertDataState(alertData);
+            this.setShowResultsAlert(true);
+        }
+    }
+
+    setResultAlertDataState = (alertData) => {
+        this.setState({
+            resultsAlertData: {
+                header: alertData.title,
+                subHeader: alertData.subHeader,
+                message: alertData.instructions,
+                buttons: alertData.buttons
+            }
+        });
     }
 
     cleanUp = () => {
@@ -389,13 +388,14 @@ export class Game extends Component {
             clearTimeout(this.progressbarTimer);
     }
 
-    setShowResultsAlert = (bool) => {
-        this.setState({ showResultAlert: bool });
+    sendBtnClicked = () => {
+        const dataForResultAlert = { type: 'sendBtn' };
+        this.finishRound(dataForResultAlert);
     }
 
-    sendBtnClicked = () => {
-        // TODO: Prepare result alert
-        this.finishRound();
+
+    setShowResultsAlert = (bool) => {
+        this.setState({ showResultAlert: bool });
     }
 
     render() {
@@ -419,7 +419,6 @@ export class Game extends Component {
                         }
                     </IonToolbar>
                 </IonHeader>
-                {/* TODO: If platform, touch or HTML5 */}
                 <IonContent>
                     <IonAlert
                         isOpen={this.state.showResultAlert}
@@ -434,7 +433,6 @@ export class Game extends Component {
                     />
                     <DndProvider backend={this._dndBackend}>
                         <Wrapper>
-
                             <IonProgressBar
                                 color={this.state.progressbarColor}
                                 value={this.state.progressbarValue}
