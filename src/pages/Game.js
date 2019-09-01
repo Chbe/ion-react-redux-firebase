@@ -14,8 +14,7 @@ import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions'
 import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 import { withFirestore } from 'react-redux-firebase';
-import { wordsApiKey } from '../config/Configs';
-import { prepareAlertForBustResult, prepareAlertForTimesUp, prepareResultAlert } from '../services/game/in-game/InGameService';
+import { prepareAlertForBustResult, prepareAlertForTimesUp, prepareResultAlert, getClosestActivePlayer, setMarksAndActive, getWordDetails } from '../services/game/in-game/InGameService';
 
 const Wrapper = styled(FlexboxCenter)`
     height: 90vh;
@@ -141,62 +140,6 @@ export class Game extends Component {
         }, (25000 / 1000));
     }
 
-    getClosestActivePlayer = (getPreviousPlayer = false) => {
-        // Remove scores
-        const players = [...this.state.game.players]
-            .map(({ uid, isActive }) => { return { uid, isActive } });
-
-        /**
-         * Defining a start index for our loop since
-         * we want to get the "next player in line" 
-         * FROM current player
-         */
-        const startIndex = players.findIndex(p => p.uid === this.props.uid)
-        const playersLength = players.length;
-
-        const innerLoopFunc = (i) => {
-            const playerInd = (i + startIndex) % playersLength;
-            const player = players[playerInd];
-            if (player.uid !== this.props.uid && player.isActive) {
-                return player.uid;
-            }
-        }
-
-        if (getPreviousPlayer) {
-            for (let i = players.length; i > 0; i--) {
-                const player = innerLoopFunc(i);
-                if (player)
-                    return player;
-            }
-        } else {
-            for (let i = 0, length = players.length; i < length; i++) {
-                const player = innerLoopFunc(i);
-                if (player)
-                    return player;
-            }
-        }
-    }
-
-    setMarksAndActive = (uid) => {
-        const players = [...this.state.game.players]
-            .map(user => {
-                if (user.uid === uid) {
-                    const score = user.score + 1;
-                    const isActive = score === 5
-                        ? false
-                        : true;
-
-                    return {
-                        ...user,
-                        isActive,
-                        score
-                    }
-                }
-                return user;
-            });
-        return players
-    }
-
     checkNumberOfActivePlayers = (players) => {
         let activePlayers = players
             .filter(player => player.isActive === true);
@@ -230,16 +173,16 @@ export class Game extends Component {
 
     bustPrevPlayer = async () => {
         /**
-         * Check if letters.join('') is a word via wordsapi.com
          * TODO: Show loader while awaing api
          * TODO: Log the results in chat
          */
-
+        const players = this.state.game.players;
+        const uid = this.props.uid;
         const word = [...this.state.game.letters].join('');
-        const prevPlayerUid = this.getClosestActivePlayer(true);
+        const prevPlayerUid = getClosestActivePlayer(players, true, uid);
         let setPreviousPlayerActive = false;
         let markUser;
-        const wordDefintions = await this.getWordDetails(word);
+        const wordDefintions = await getWordDetails(word);
 
         if (wordDefintions.success) {
             /** Previous player gets a mark. 
@@ -256,112 +199,70 @@ export class Game extends Component {
         this.finishRound(dataForResultAlert, setPreviousPlayerActive, markUser);
     }
 
-    getWordDetails = async (word) => {
-        /** 400	Bad Request -- Your request is invalid.
-            401	Unauthorized -- Your API key is wrong.
-            404	Not Found -- No matching word was found.
-            500	Internal Server Error -- We had a problem with our server. Try again later.
-
-            Eg 200
-            definition: "the second day of the week; the first working day"
-            message: ""
-            partOfSpeech: "noun"
-            success: true 
-            
-            Eg 404
-            definition: ""
-            message: "word not found"
-            partOfSpeech: ""
-            success: false */
-
-        const url = `https://wordsapiv1.p.mashape.com/words/${word}/definitions`;
-        let resObj = {
-            success: true,
-            word: '',
-            partOfSpeech: '',
-            definition: '',
-            message: ''
-        };
-
-        try {
-            let res = await fetch(url, {
-                headers: {
-                    "X-Mashape-Key": wordsApiKey
-                }
-            });
-
-            if (res.status === 200) {
-                const resJson = await res.json();
-                const { word, definitions } = resJson;
-                resObj = { ...resObj, word, ...definitions[0] };
-
-            } else {
-                const resJson = await res.json();
-                resObj = { ...resObj, ...resJson };
-            }
-            return resObj;
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     finishRound = (
         dataForResultAlert,
         setPreviousPlayerActive = false,
-        markUser = this.props,
+        markUser = this.props.uid,
     ) => {
         let gameFinished = false;
         let completedGame = {}
         const updates = {};
+        const gamePlayers = this.state.game.players;
+        const uid = this.props.uid;
         const letter = this.props.chosenLetter;
         if (letter) {
-            updates['activePlayer'] = this.getClosestActivePlayer(false);
+            updates['activePlayer'] = getClosestActivePlayer(gamePlayers, false, uid);
             updates['letters'] = !!this.props.lettersArray
                 ? [...this.props.lettersArray, letter]
                 : [letter];
         } else {
-            const players = this.setMarksAndActive(markUser);
-            const nrOfActivePlayers = this.checkNumberOfActivePlayers(players);
+            const updatedPlayersArr = setMarksAndActive(gamePlayers, markUser);
+            const nrOfActivePlayers = this.checkNumberOfActivePlayers(updatedPlayersArr);
             if (nrOfActivePlayers === 1) {
-                completedGame = this.finishGame(players);
+                completedGame = this.finishGame(updatedPlayersArr);
                 gameFinished = true;
             } else {
                 const nextPlayer = setPreviousPlayerActive
-                    ? this.getClosestActivePlayer(setPreviousPlayerActive)
-                    : this.props.uid;
+                    ? getClosestActivePlayer(gamePlayers, true, uid)
+                    : uid;
                 updates['activePlayer'] = nextPlayer;
-                updates['players'] = players;
+                updates['players'] = updatedPlayersArr;
             }
         }
-        this.prepareAlert(dataForResultAlert, letter, completedGame);
+        const alertWillShow = this.prepareAlert(dataForResultAlert, letter, completedGame);
 
         // if (gameFinished) {
         //     this.props.batchSet(completedGame);
         // } else {
         //     this.props.batchUpdate(updates);
         // }
+
+        if (!alertWillShow)
+            this.redirectToScoreboard()
+
         this.cleanUp();
     }
 
     prepareAlert = ({ type, data }, letter, completedGame) => {
         const players = this.state.game.players;
-        let alertDataset = false;
+        let alertDataIsSet = false;
         let alertData = {};
         if (type === 'bust') {
             alertData = prepareAlertForBustResult(players, data, completedGame)
             this.setResultAlertDataState(alertData);
-            alertDataset = true;
+            alertDataIsSet = true;
         } else if (!letter && type === 'timesup') {
             alertData = prepareAlertForTimesUp(players, completedGame);
-            alertDataset = true;
+            alertDataIsSet = true;
         } else if (!letter && type === 'sendBtn') {
             alertData = prepareResultAlert(players, completedGame);
-            alertDataset = true;
+            alertDataIsSet = true;
         }
-        if (alertDataset) {
+        if (alertDataIsSet) {
             this.setResultAlertDataState(alertData);
             this.setShowResultsAlert(true);
         }
+        return alertDataIsSet;
     }
 
     setResultAlertDataState = (alertData) => {
@@ -392,10 +293,13 @@ export class Game extends Component {
         const dataForResultAlert = { type: 'sendBtn' };
         this.finishRound(dataForResultAlert);
     }
-
-
+    
     setShowResultsAlert = (bool) => {
         this.setState({ showResultAlert: bool });
+    }
+
+    redirectToScoreboard = () => {
+        this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
     }
 
     render() {
@@ -424,7 +328,7 @@ export class Game extends Component {
                         isOpen={this.state.showResultAlert}
                         onDidDismiss={() => {
                             this.setShowResultsAlert(false);
-                            this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+                            this.redirectToScoreboard();
                         }}
                         header={this.state.resultsAlertData.header}
                         subHeader={this.state.resultsAlertData.subHeader}
