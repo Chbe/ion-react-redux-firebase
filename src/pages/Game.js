@@ -7,7 +7,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import LetterBox from '../components/game/drag-n-drop/LetterBox';
 import Keyboard from '../components/game/drag-n-drop/Keyboard';
-import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton, IonContent } from '@ionic/react';
+import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonProgressBar, IonIcon, IonButton, IonContent, IonModal, IonAlert } from '@ionic/react';
 import styled from 'styled-components';
 import { FlexboxCenter, MaxWidthContent } from '../components/UI/DivUI';
 import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions';
@@ -47,7 +47,14 @@ export class Game extends Component {
             timeLeft: 25,
             progressbarValue: 0,
             buffer: 0,
-            progressbarColor: 'primary'
+            progressbarColor: 'primary',
+            showResultAlert: false,
+            resultsAlertData: {
+                header: '',
+                subHeader: '',
+                message: '',
+                buttons: []
+            }
         };
     }
 
@@ -109,6 +116,7 @@ export class Game extends Component {
             const timeLeft = this.state.timeLeft - 1;
             this.safeStateUpdate({ timeLeft })
             if (timeLeft === 0) {
+                // TODO: Prepare Result alert
                 this.finishRound();
             }
         }, 1000);
@@ -222,11 +230,12 @@ export class Game extends Component {
     bustPrevPlayer = async () => {
         /**
          * Check if letters.join('') is a word via wordsapi.com
-         * Log the results in chat
+         * TODO: Show loader while awaing api
+         * TODO: Log the results in chat
          */
 
         const word = [...this.state.game.letters].join('');
-        const prevPlayer = this.getClosestActivePlayer(true);
+        const prevPlayerUid = this.getClosestActivePlayer(true);
         let setPreviousPlayerActive = false;
         let markUser;
         const wordDefintions = await this.getWordDetails(word);
@@ -234,7 +243,7 @@ export class Game extends Component {
         if (wordDefintions.success) {
             /** Previous player gets a mark. 
              * Current player starts new round */
-            markUser = prevPlayer;
+            markUser = prevPlayerUid;
         } else {
             /** Current player gets a mark.
              * Previous player starts new round */
@@ -242,7 +251,40 @@ export class Game extends Component {
             setPreviousPlayerActive = true;
         }
 
+        this.prepareAlertForBustResult(wordDefintions, prevPlayerUid);
         this.finishRound(setPreviousPlayerActive, markUser);
+    }
+
+    prepareAlertForBustResult = (wordDefintions, prevPlayerUid) => {
+        const prevDisplayName = this.state.game.players
+            .find(player => player.uid === prevPlayerUid)
+            .displayName;
+
+        const instructions = wordDefintions.success
+            ? `${prevDisplayName} got a mark and you will start the new round`
+            : instructions = `You got a mark and ${prevDisplayName} will start the new round`;
+
+        this.setResultAlertDataState({
+            title: wordDefintions.success
+                ? `${wordDefintions.word} is a word`
+                : `${wordDefintions.word} is not a word`,
+            subHeader: wordDefintions.success
+                ? `${wordDefintions.word}: ${wordDefintions.definition}`
+                : wordDefintions.message,
+            instructions,
+            buttons: ['Got it']
+        });
+    }
+
+    setResultAlertDataState = (alertData) => {
+        this.setState({
+            resultsAlertData: {
+                header: alertData.title,
+                subHeader: alertData.subHeader,
+                message: alertData.instructions,
+                buttons: alertData.buttons
+            }
+        });
     }
 
     getWordDetails = async (word) => {
@@ -330,7 +372,7 @@ export class Game extends Component {
         // } else {
         //     this.props.batchUpdate(updates);
         // }
-        // this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+        this.setShowResultsAlert(true)
         this.cleanUp();
     }
 
@@ -345,6 +387,15 @@ export class Game extends Component {
             clearTimeout(this.startTimer);
         if (this.progressbarTimer)
             clearTimeout(this.progressbarTimer);
+    }
+
+    setShowResultsAlert = (bool) => {
+        this.setState({ showResultAlert: bool });
+    }
+
+    sendBtnClicked = () => {
+        // TODO: Prepare result alert
+        this.finishRound();
     }
 
     render() {
@@ -370,6 +421,17 @@ export class Game extends Component {
                 </IonHeader>
                 {/* TODO: If platform, touch or HTML5 */}
                 <IonContent>
+                    <IonAlert
+                        isOpen={this.state.showResultAlert}
+                        onDidDismiss={() => {
+                            this.setShowResultsAlert(false);
+                            this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
+                        }}
+                        header={this.state.resultsAlertData.header}
+                        subHeader={this.state.resultsAlertData.subHeader}
+                        message={this.state.resultsAlertData.message}
+                        buttons={this.state.resultsAlertData.buttons}
+                    />
                     <DndProvider backend={this._dndBackend}>
                         <Wrapper>
 
@@ -384,7 +446,7 @@ export class Game extends Component {
                                 <ActionsWrapper>
                                     {/* Send letter */}
                                     <Button
-                                        onClick={this.finishRound}
+                                        onClick={this.sendBtnClicked}
                                         disabled={!this.props.enablePlay}
                                         size="large"
                                         fill="outline">
