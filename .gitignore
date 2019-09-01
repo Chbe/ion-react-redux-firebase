@@ -23,5 +23,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Firebase props
-/src/firebase/FbConfig.js
+# Firebase props, WordsApiKey
+/src/config/Configs.js
+/src/test
+IDEAS

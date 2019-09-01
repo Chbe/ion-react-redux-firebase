@@ -14,6 +14,7 @@ import { setEnablePlay, setLettersArray, inGameCleanUp } from '../store/actions'
 import { rewind, glasses, eye, send } from 'ionicons/icons';
 import { isPlatform } from '@ionic/react'; // TODO: Should it be core or react????
 import { withFirestore } from 'react-redux-firebase';
+import { wordsApiKey } from '../config/Configs';
 
 const Wrapper = styled(FlexboxCenter)`
     height: 90vh;
@@ -131,35 +132,46 @@ export class Game extends Component {
         }, (25000 / 1000));
     }
 
-    setNextActivePlayer = () => {
-        // Remove score
+    getClosestActivePlayer = (getPreviousPlayer = false) => {
+        // Remove scores
         const players = [...this.state.game.players]
             .map(({ uid, isActive }) => { return { uid, isActive } });
 
         /**
          * Defining a start index for our loop since
-         * we want to get the closest or the "next player in line"
+         * we want to get the "next player in line" 
+         * FROM current player
          */
-        const startIndex = players.indexOf(
-            players.find(p => p.uid === this.props.uid)
-        );
+        const startIndex = players.findIndex(p => p.uid === this.props.uid)
+        const playersLength = players.length;
 
-        for (let i = 0, length = players.length; i < length; i++) {
-            const playerInd = (i + startIndex) % length;
+        const innerLoopFunc = (i) => {
+            const playerInd = (i + startIndex) % playersLength;
             const player = players[playerInd];
-            if (player.uid === this.props.uid) {
-                continue;
-            }
-            else if (player.isActive) {
+            if (player.uid !== this.props.uid && player.isActive) {
                 return player.uid;
+            }
+        }
+
+        if (getPreviousPlayer) {
+            for (let i = players.length; i > 0; i--) {
+                const player = innerLoopFunc(i);
+                if (player)
+                    return player;
+            }
+        } else {
+            for (let i = 0, length = players.length; i < length; i++) {
+                const player = innerLoopFunc(i);
+                if (player)
+                    return player;
             }
         }
     }
 
-    setScoresAndActive = () => {
+    setMarksAndActive = (uid) => {
         const players = [...this.state.game.players]
             .map(user => {
-                if (user.uid === this.props.uid) {
+                if (user.uid === uid) {
                     const score = user.score + 1;
                     const isActive = score === 5
                         ? false
@@ -207,33 +219,117 @@ export class Game extends Component {
         };
     }
 
-    finishRound = () => {
+    bustPrevPlayer = async () => {
+        /**
+         * Check if letters.join('') is a word via wordsapi.com
+         * Log the results in chat
+         */
+
+        const word = [...this.state.game.letters].join('');
+        const prevPlayer = this.getClosestActivePlayer(true);
+        let setPreviousPlayerActive = false;
+        let markUser;
+        const wordDefintions = await this.getWordDetails(word);
+
+        if (wordDefintions.success) {
+            /** Previous player gets a mark. 
+             * Current player starts new round */
+            markUser = prevPlayer;
+        } else {
+            /** Current player gets a mark.
+             * Previous player starts new round */
+            markUser = this.props.uid;
+            setPreviousPlayerActive = true;
+        }
+
+        this.finishRound(setPreviousPlayerActive, markUser);
+    }
+
+    getWordDetails = async (word) => {
+        /** 400	Bad Request -- Your request is invalid.
+            401	Unauthorized -- Your API key is wrong.
+            404	Not Found -- No matching word was found.
+            500	Internal Server Error -- We had a problem with our server. Try again later.
+
+            Eg 200
+            definition: "the second day of the week; the first working day"
+            message: ""
+            partOfSpeech: "noun"
+            success: true 
+            
+            Eg 404
+            definition: ""
+            message: "word not found"
+            partOfSpeech: ""
+            success: false */
+
+        const url = `https://wordsapiv1.p.mashape.com/words/${word}/definitions`;
+        let resObj = {
+            success: true,
+            word: '',
+            partOfSpeech: '',
+            definition: '',
+            message: ''
+        };
+
+        try {
+            let res = await fetch(url, {
+                headers: {
+                    "X-Mashape-Key": wordsApiKey
+                }
+            });
+
+            if (res.status === 200) {
+                const resJson = await res.json();
+                const { word, definitions } = resJson;
+                resObj = { ...resObj, word, ...definitions[0] };
+
+            } else {
+                const resJson = await res.json();
+                resObj = { ...resObj, ...resJson };
+            }
+            return resObj;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    finishRound = (
+        setPreviousPlayerActive = false,
+        markUser = this.props.uid
+    ) => {
+        /** Gets called when time is up - current user gets mark
+         *  Gets called then user clicks "Send" button
+         */
         let gameFinished = false;
         let completedGame = {}
         const updates = {};
         const letter = this.props.chosenLetter;
         if (letter) {
-            updates['activePlayer'] = this.setNextActivePlayer();
+            updates['activePlayer'] = this.getClosestActivePlayer(false);
             updates['letters'] = !!this.props.lettersArray
                 ? [...this.props.lettersArray, letter]
                 : [letter];
         } else {
-            const players = this.setScoresAndActive();
-            const activeNumber = this.checkNumberOfActivePlayers(players);
-            if (activeNumber === 1) {
+            const players = this.setMarksAndActive(markUser);
+            const nrOfActivePlayers = this.checkNumberOfActivePlayers(players);
+            if (nrOfActivePlayers === 1) {
                 completedGame = this.finishGame(players);
                 gameFinished = true;
             } else {
-                updates['activePlayer'] = this.setNextActivePlayer();
+                const nextPlayer = setPreviousPlayerActive
+                    ? this.getClosestActivePlayer(setPreviousPlayerActive)
+                    : this.props.uid;
+                updates['activePlayer'] = nextPlayer;
                 updates['players'] = players;
             }
         }
 
-        if (gameFinished) {
-            // this.props.batchSet(completedGame);
-        } else {
-            // this.props.batchUpdate(updates);
-        }
+        // if (gameFinished) {
+        //     this.props.batchSet(completedGame);
+        // } else {
+        //     this.props.batchUpdate(updates);
+        // }
         // this.props.history.push(`/scoreboard/${this.props.match.params.gameId}`);
         this.cleanUp();
     }
@@ -294,10 +390,15 @@ export class Game extends Component {
                                         fill="outline">
                                         <IonIcon slot="icon-only" icon={send}></IonIcon>
                                     </Button>
-                                    <Button size="large" disabled={!this.props.enablePlay} fill="outline">
+                                    {/* <Button size="large" disabled={!this.props.enablePlay} fill="outline">
                                         <IonIcon slot="icon-only" icon={glasses}></IonIcon>
-                                    </Button>
-                                    <Button size="large" disabled={!this.props.enablePlay} fill="outline">
+                                    </Button> */}
+                                    <Button
+                                        onClick={this.bustPrevPlayer}
+                                        size="large"
+                                        disabled={!this.props.enablePlay
+                                            || this.props.lettersArray.length < 3}
+                                        fill="outline">
                                         <IonIcon slot="icon-only" icon={eye}></IonIcon>
                                     </Button>
                                 </ActionsWrapper>
