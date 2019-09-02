@@ -36,7 +36,7 @@ import Chat from './pages/Chat';
 import Loading from './pages/Loading';
 import styled from 'styled-components';
 import { FlexboxCenter } from './components/UI/DivUI';
-import Scoreboard from './components/game/in-game/Scoreboard';
+import Scoreboard from './components/game/Scoreboard';
 import TestGenerateGames from './test/TestGenerateGames';
 
 const LoginWrapper = styled(FlexboxCenter)`

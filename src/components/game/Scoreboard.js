@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { IonContent, IonItem, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonAvatar, IonLabel, IonList } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 import { firestoreConnect } from 'react-redux-firebase';
-import SkeletonScores from '../../skeletons/SkeletonScores';
+import SkeletonScores from '../skeletons/SkeletonScores';
 
 const Scoreboard = ({ game, history }) => {
     console.log(game)
